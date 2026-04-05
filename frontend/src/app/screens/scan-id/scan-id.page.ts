@@ -119,10 +119,14 @@ export class ScanIdPage {
   }
 
   resetScanner() {
-    setTimeout(() => {
-      this.scanned = false;
-      this.scanResult = null;
-    }, 3000);
+    // Only reset scan lock so scanner can detect again after user dismisses the result
+    // The result stays on screen until the user clicks "Scan Another"
+  }
+
+  dismissResult() {
+    this.scanResult = null;
+    this.verification = '';
+    this.scanned = false;
   }
 
   /* Department short code */
