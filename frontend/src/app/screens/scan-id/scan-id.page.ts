@@ -17,6 +17,7 @@ import {
   alertCircle,
   checkmark,
   close,
+  closeCircle,
   flashOutline
 } from 'ionicons/icons';
 
@@ -49,6 +50,7 @@ export class ScanIdPage {
       alertCircle,
       checkmark,
       close,
+      closeCircle,
       flashOutline
     });
 
