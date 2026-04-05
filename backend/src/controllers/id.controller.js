@@ -350,8 +350,7 @@ exports.verifyQr = async (req, res) => {
     // 🛡️ Verify JWT Token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
  
-    const user = await User.findById(decoded.userId)
-      .populate('profileId');
+    const user = await User.findById(decoded.userId);
 
     if (!user) {
       await VerificationLog.create({
@@ -362,13 +361,21 @@ exports.verifyQr = async (req, res) => {
       return res.json({ valid: false, message: 'User not found' });
     }
 
+    // Look up the actual profile from the correct collection
+    let profile = null;
+    if (user.role === 'Student') {
+      profile = await Student.findById(user.profileId);
+    } else if (user.role === 'Employee') {
+      profile = await Employee.findById(user.profileId);
+    }
+
     // 🚨 EMPLOYEE restriction
     if (scanner.role === 'Employee' && user.role !== 'Student') {
 
       await VerificationLog.create({
         scannedBy: scanner._id,
         scannedUser: user._id,
-        scannedName: user.profileId?.name,
+        scannedName: profile?.name,
         scannedRole: user.role,
         result: 'NOT ALLOWED'
       });
@@ -385,7 +392,7 @@ exports.verifyQr = async (req, res) => {
       await VerificationLog.create({
         scannedBy: scanner._id,
         scannedUser: user._id,
-        scannedName: user.profileId?.name,
+        scannedName: profile?.name,
         scannedRole: user.role,
         result: 'INVALID'
       });
@@ -400,18 +407,18 @@ exports.verifyQr = async (req, res) => {
     await VerificationLog.create({
       scannedBy: scanner._id,
       scannedUser: user._id,
-      scannedName: user.profileId?.name,
+      scannedName: profile?.name,
       scannedRole: user.role,
       result: 'VALID'
     });
 
     res.json({
       valid: true,
-      name: user.profileId?.name,
-      id: user.profileId?._id,
-      department: user.profileId?.department,
+      name: profile?.name || decoded.name || 'Unknown',
+      id: profile?.id || decoded.id || 'N/A',
+      department: profile?.department || decoded.department || '',
       role: user.role,
-      photo: user.profileId?.photo // 👈 important
+      photo: profile?.photo || ''
     });
 
   } catch (err) {
