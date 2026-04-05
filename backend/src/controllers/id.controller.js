@@ -280,8 +280,21 @@ exports.getMyId = async (req, res) => {
       process.env.JWT_SECRET
     );
 
+    // Lightweight token for QR code (no photo — QR codes can only hold ~3KB)
+    const qrToken = jwt.sign(
+      {
+        userId: user._id.toString(),
+        name: profileObj.name,
+        id: profileObj.id,
+        department: profileObj.department,
+        role: user.role
+      },
+      process.env.JWT_SECRET
+    );
+
     res.json({
-      idToken
+      idToken,
+      qrToken
     });
 
   } catch (err) {

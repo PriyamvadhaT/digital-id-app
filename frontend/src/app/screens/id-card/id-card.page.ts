@@ -80,12 +80,13 @@ export class IdCardPage {
 
     /* 1. TRY OFFLINE TOKEN FIRST (FOR INSTANT UI) */
     const savedToken = localStorage.getItem('offlineIdToken');
+    const savedQrToken = localStorage.getItem('offlineQrToken');
     if (savedToken) {
       console.log("Loading offline token...");
       this.profile = this.decodeToken(savedToken);
       if (this.profile) {
         this.role = this.profile.role;
-        this.qrValue = savedToken; // ✅ Set QR immediately from cached token
+        this.qrValue = savedQrToken || ''; // Use lightweight QR token
         // We still continue to fetch online to sync latest data
       }
     }
@@ -103,7 +104,10 @@ export class IdCardPage {
           }
 
           localStorage.setItem('offlineIdToken', res.idToken);
-          this.qrValue = res.idToken; // ✅ Set QR directly from server token
+          if (res.qrToken) {
+            localStorage.setItem('offlineQrToken', res.qrToken);
+            this.qrValue = res.qrToken; // ✅ Use lightweight QR token (no photo)
+          }
           const newProfile = this.decodeToken(res.idToken);
           
           if (newProfile) {
