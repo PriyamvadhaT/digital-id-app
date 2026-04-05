@@ -1,0 +1,134 @@
+.dashboard-bg{
+  --background:#f4f6f9;
+  padding:20px;
+}
+
+/* Header */
+
+.page-header{
+  text-align:center;
+  font-size:22px;
+  font-weight:600;
+  margin-bottom:20px;
+  color:#1f2937;
+
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:8px;
+}
+
+/* Search */
+
+.search-box{
+  border-radius:10px;
+  margin-bottom:12px;
+}
+
+/* Sort */
+
+.sort-options{
+  display:flex;
+  gap:20px;
+  flex-wrap:wrap;
+  margin-bottom:15px;
+}
+
+.sort-item{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  color:#374151;
+}
+
+/* Employee List */
+
+.employee-list{
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+
+/* Employee Item */
+
+.employee-item{
+  background:white;
+  padding:14px;
+  border-radius:12px;
+
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+
+  box-shadow:0 4px 10px rgba(0,0,0,0.08);
+}
+
+/* Left */
+
+.employee-left{
+  display:flex;
+  gap:10px;
+  align-items:center;
+}
+
+.employee-left ion-icon{
+  font-size:34px;
+  color:#3b82f6;
+}
+
+.employee-left h3{
+  margin:0;
+  font-size:16px;
+}
+
+.employee-left p{
+  margin:0;
+  font-size:13px;
+  color:#6b7280;
+}
+
+/* Right */
+
+.employee-right{
+  display:flex;
+  flex-direction:column;
+  align-items:flex-end;
+  gap:6px;
+}
+
+/* Status */
+
+.status{
+  font-size:12px;
+  font-weight:600;
+}
+
+.active{
+  color:#16a34a;
+}
+
+.inactive{
+  color:#dc2626;
+}
+
+/* Actions */
+
+.actions{
+  display:flex;
+  gap:6px;
+}
+
+/* Edit form */
+
+.edit-box{
+  background:white;
+  padding:16px;
+  border-radius:12px;
+  margin-bottom:20px;
+  box-shadow:0 4px 10px rgba(0,0,0,0.08);
+}
+
+.edit-box h3{
+  text-align:center;
+  margin-bottom:10px;
+}

@@ -1,0 +1,78 @@
+.dashboard-bg{
+  --background:#f4f6f9;
+}
+
+/* page wrapper */
+.center-box{
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:flex-start;
+  padding:20px;
+}
+
+/* form card */
+.form-card{
+  width:100%;
+  max-width:420px;
+  background:white;
+  padding:24px;
+  border-radius:14px;
+  box-shadow:0 4px 12px rgba(0,0,0,0.08);
+}
+
+/* title */
+.page-header{
+  text-align:center;
+  font-size:22px;
+  font-weight:600;
+  margin-bottom:20px;
+  color:#1f2937;
+}
+
+/* spacing */
+ion-item{
+  margin-bottom:14px;
+}
+
+/* button */
+.create-btn{
+  margin-top:20px;
+  height:48px;
+  font-weight:600;
+  border-radius:8px;
+}
+
+/* ID preview */
+.id-preview{
+  text-align:center;
+  margin:16px 0;
+  padding:14px;
+  background:#eef2ff;
+  border-radius:10px;
+}
+
+.id-preview p{
+  font-size:13px;
+  color:#6b7280;
+}
+
+.id-preview h2{
+  color:#2563eb;
+  font-weight:700;
+  letter-spacing:2px;
+}
+
+/* mobile optimization */
+@media (max-width:768px){
+
+  .center-box{
+    padding:15px;
+  }
+
+  .form-card{
+    max-width:100%;
+    border-radius:12px;
+  }
+
+}

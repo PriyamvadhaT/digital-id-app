@@ -1,0 +1,161 @@
+/* Ionic Core CSS */
+@import "@ionic/angular/css/core.css";
+
+/* Basic CSS for apps */
+@import "@ionic/angular/css/normalize.css";
+@import "@ionic/angular/css/structure.css";
+@import "@ionic/angular/css/typography.css";
+
+/* Optional Ionic utilities */
+@import "@ionic/angular/css/padding.css";
+@import "@ionic/angular/css/float-elements.css";
+@import "@ionic/angular/css/text-alignment.css";
+@import "@ionic/angular/css/text-transformation.css";
+@import "@ionic/angular/css/flex-utils.css";
+@import "@ionic/angular/css/display.css";
+
+/* ------------------------------------------------ */
+/* GLOBAL APP STYLES */
+/* ------------------------------------------------ */
+
+body {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* ------------------------------------------------ */
+/* TEXT COLORS */
+/* ------------------------------------------------ */
+
+/* Default text color (for light backgrounds) */
+
+ion-content {
+  color: #0f172a;
+}
+
+/* White text for gradient pages */
+
+.dashboard-bg,
+.login-bg,
+.splash {
+  color: #ffffff;
+}
+
+/* ------------------------------------------------ */
+/* PAGE BACKGROUND */
+/* ------------------------------------------------ */
+
+.page-bg {
+  --background: #f4f6fb;
+}
+
+/* ------------------------------------------------ */
+/* CENTERED LAYOUT */
+/* ------------------------------------------------ */
+
+.center-box {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+/* ------------------------------------------------ */
+/* CARD STYLE */
+/* ------------------------------------------------ */
+
+.app-card {
+  width: 100%;
+  max-width: 380px;
+  background: #ffffff;
+  color: #0f172a;
+  padding: 25px;
+  border-radius: 20px;
+  box-shadow: 0 12px 25px rgba(0,0,0,0.15);
+}
+
+/* ------------------------------------------------ */
+/* TITLES */
+/* ------------------------------------------------ */
+
+.page-title {
+  text-align: center;
+  margin-bottom: 20px;
+  font-weight: 600;
+}
+
+/* ------------------------------------------------ */
+/* SPACING */
+/* ------------------------------------------------ */
+
+.spacer {
+  height: 12px;
+}
+
+/* ------------------------------------------------ */
+/* STATUS COLORS */
+/* ------------------------------------------------ */
+
+.active {
+  color: #22c55e;
+  font-weight: bold;
+}
+
+.inactive {
+  color: #ef4444;
+  font-weight: bold;
+}
+
+/* ------------------------------------------------ */
+/* BUTTONS */
+/* ------------------------------------------------ */
+
+ion-button {
+  margin-top: 10px;
+  border-radius: 10px;
+}
+
+/* ------------------------------------------------ */
+/* CARDS */
+/* ------------------------------------------------ */
+
+ion-card {
+  border-radius: 18px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+}
+
+/* ------------------------------------------------ */
+/* INPUTS */
+/* ------------------------------------------------ */
+
+ion-item {
+  --border-radius: 12px;
+  margin-bottom: 10px;
+}
+
+/* Ensure input text is visible */
+
+ion-input {
+  color: #0f172a;
+}
+
+/* ------------------------------------------------ */
+/* GRADIENT BACKGROUNDS */
+/* ------------------------------------------------ */
+
+/* Dashboard pages */
+
+.dashboard-bg {
+  --background: linear-gradient(135deg,#6a5af9,#8a6dfc);
+}
+
+/* Login pages */
+
+.login-bg {
+  --background: linear-gradient(135deg,#6a5af9,#8a6dfc);
+}
+
+/* Splash screen */
+
+.splash {
+  --background: linear-gradient(135deg,#6a5af9,#8a6dfc);
+}

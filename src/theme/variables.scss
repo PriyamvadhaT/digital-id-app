@@ -1,0 +1,29 @@
+:root {
+
+  /* Primary – soft indigo */
+  --ion-color-primary: #4f46e5;
+  --ion-color-primary-rgb: 79, 70, 229;
+  --ion-color-primary-contrast: #ffffff;
+
+  /* Secondary – muted gray */
+  --ion-color-secondary: #64748b;
+
+  /* Success */
+  --ion-color-success: #22c55e;
+
+  /* Danger */
+  --ion-color-danger: #ef4444;
+
+  /* Ionic default colors */
+  --ion-background-color: #f4f6fb;
+  --ion-text-color: #0f172a;
+
+  /* App custom colors */
+  --app-bg: #f8fafc;
+  --card-bg: #ffffff;
+  --text-dark: #0f172a;
+  --text-light: #64748b;
+
+  --color-scheme: light;
+
+}

@@ -1,0 +1,84 @@
+<ion-content class="dashboard-bg">
+
+  <div class="scanner-wrapper">
+
+    <!-- HEADER -->
+
+    <div class="page-header">
+      <ion-icon name="qr-code-outline"></ion-icon>
+
+      <h2 *ngIf="role === 'Admin'">Scan ID</h2>
+      <h2 *ngIf="role === 'Employee'">Scan Student ID</h2>
+
+    </div>
+
+    <!-- SCANNER -->
+
+    <div class="scanner-frame">
+
+      <zxing-scanner
+        (scanSuccess)="onCodeResult($event)">
+      </zxing-scanner>
+
+      <div class="scan-line"></div>
+
+    </div>
+
+    <p class="hint">
+      <ion-icon name="scan-outline"></ion-icon>
+      Align QR code inside the frame
+    </p>
+
+
+    <!-- RESULT -->
+
+    <div *ngIf="scanResult" class="result-card">
+
+      <div class="result-header">
+        <ion-icon name="person-circle-outline"></ion-icon>
+        <h3>Verification Result</h3>
+      </div>
+
+      <div class="info">
+
+        <img 
+          *ngIf="scanResult.photo"
+          [src]="'data:image/jpeg;base64,' + scanResult.photo"
+          class="user-photo"
+        />
+
+        <p>
+          <ion-icon name="person-outline"></ion-icon>
+          <strong>Name</strong> : {{scanResult.name}}
+        </p>
+
+        <p>
+          <ion-icon name="card-outline"></ion-icon>
+          <strong>ID</strong> : {{scanResult.id}}
+        </p>
+
+        <p>
+          <ion-icon name="school-outline"></ion-icon>
+          <strong>Department</strong> : {{ getDeptCode(scanResult.department) }}
+        </p>
+
+      </div>
+
+      <div
+        class="status"
+        [class.valid]="verification === 'VALID'"
+        [class.invalid]="verification !== 'VALID'">
+
+        <ion-icon
+          [name]="verification === 'VALID' ? 'checkmark-circle' : 'close-circle'">
+        </ion-icon>
+
+        {{verification}}
+
+      </div>
+
+    </div>
+
+  </div>
+
+</ion-content>

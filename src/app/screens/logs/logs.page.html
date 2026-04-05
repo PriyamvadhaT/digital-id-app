@@ -1,0 +1,97 @@
+<ion-content class="logs-bg">
+
+  <!-- Pull to refresh -->
+  <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <div class="container">
+
+    <h2 class="title">Verification Logs</h2>
+
+    <!-- 🔍 SEARCH -->
+    <div class="field search">
+      <ion-icon name="search-outline"></ion-icon>
+      <input 
+        type="text" 
+        placeholder="Search by name or ID"
+        [(ngModel)]="searchText">
+    </div>
+
+    <!-- 📅 FROM DATE -->
+    <div class="field">
+      <label>From Date</label>
+      <div class="input-wrap">
+        <ion-icon name="calendar-outline"></ion-icon>
+        <input type="date" [(ngModel)]="fromDate">
+      </div>
+    </div>
+
+    <!-- 📅 TO DATE -->
+    <div class="field">
+      <label>To Date</label>
+      <div class="input-wrap">
+        <ion-icon name="calendar-outline"></ion-icon>
+        <input type="date" [(ngModel)]="toDate">
+      </div>
+    </div>
+
+    <!-- 🎯 FILTER -->
+    <div class="field">
+      <label>Filter Result</label>
+      <div class="input-wrap">
+        <ion-icon name="funnel-outline"></ion-icon>
+        <select [(ngModel)]="resultFilter">
+          <option value="">All</option>
+          <option value="VALID">Valid</option>
+          <option value="INVALID">Invalid</option>
+          <option value="NOT ALLOWED">Not Allowed</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- BUTTON -->
+    <button class="apply-btn" (click)="loadLogs()">
+      Apply Filters
+    </button>
+
+    <!-- EMPTY -->
+    <div *ngIf="filteredLogs().length === 0" class="empty">
+      <ion-icon name="document-outline"></ion-icon>
+      <p>No logs found</p>
+    </div>
+
+    <!-- LOG LIST -->
+    <div *ngFor="let log of filteredLogs()" class="log-card">
+
+      <div class="row">
+
+        <ion-icon name="person-circle-outline"></ion-icon>
+
+        <div class="info">
+          <h3>{{log.name}}</h3>
+          <p>ID: {{log.userId}}</p>
+        </div>
+
+        <div 
+          class="status"
+          [ngClass]="{
+            'valid': log.result === 'VALID',
+            'invalid': log.result === 'INVALID',
+            'notallowed': log.result === 'NOT ALLOWED'
+          }">
+          {{log.result}}
+        </div>
+
+      </div>
+
+      <div class="bottom">
+        <ion-icon name="time-outline"></ion-icon>
+        <span>{{log.date | date:'medium'}}</span>
+      </div>
+
+    </div>
+
+  </div>
+
+</ion-content>

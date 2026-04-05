@@ -1,0 +1,89 @@
+.dashboard-bg{
+  --background:#f1f5f9;
+}
+
+/* Layout */
+
+.splash-container{
+  height:100%;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  text-align:center;
+  padding:20px;
+}
+
+/* Logo Circle */
+
+.logo-circle{
+  width:90px;
+  height:90px;
+  border-radius:50%;
+  background:#4f46e5;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  margin-bottom:20px;
+
+  box-shadow:0 8px 20px rgba(0,0,0,0.1);
+}
+
+.logo-circle ion-icon{
+  font-size:40px;
+  color:white;
+}
+
+/* Title */
+
+.app-title{
+  font-size:26px;
+  font-weight:600;
+  margin:0;
+}
+
+.subtitle{
+  margin-top:6px;
+  color:#64748b;
+}
+
+/* Loading Section */
+
+.loading-section{
+  width:80%;
+  max-width:260px;
+  margin-top:40px;
+}
+
+/* Bar */
+
+.loading-bar{
+  width:100%;
+  height:10px;
+  background:#e2e8f0;
+  border-radius:10px;
+  overflow:hidden;
+}
+
+.progress{
+  height:100%;
+  width:0%;
+  transition:width 0.2s;
+
+  background:linear-gradient(
+    90deg,
+    #4f46e5,
+    #6366f1,
+    #22c55e
+  );
+}
+
+/* Percentage */
+
+.loading-text{
+  margin-top:6px;
+  font-size:14px;
+  color:#64748b;
+}

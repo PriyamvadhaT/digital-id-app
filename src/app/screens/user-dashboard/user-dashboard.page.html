@@ -1,0 +1,57 @@
+<ion-content class="dashboard-bg">
+
+  <div class="dashboard-container">
+
+    <!-- Profile Header -->
+    <div class="profile-card" *ngIf="profile">
+
+      <div class="avatar">
+        {{ profile.name?.charAt(0) }}
+      </div>
+
+      <h2>{{profile.name}}</h2>
+      <p class="role">{{role}}</p>
+
+    </div>
+
+    <!-- Actions -->
+
+    <div class="action-card" (click)="goToIdCard()">
+      <div class="icon">💳</div>
+      <div class="text">
+        <h3>Digital ID</h3>
+        <p>View your digital identity card</p>
+      </div>
+    </div>
+
+    <div class="action-card" (click)="goToChangePassword()">
+      <div class="icon">🔒</div>
+      <div class="text">
+        <h3>Change Password</h3>
+        <p>Update your account password</p>
+      </div>
+    </div>
+
+    <div 
+    class="action-card"
+    *ngIf="role === 'Admin' || role === 'Employee'"
+    (click)="goToScan()"
+    >
+      <div class="icon">📷</div>
+      <div class="text">
+        <h3>Scan ID</h3>
+        <p>Verify identity</p>
+      </div>
+    </div>
+
+    <div class="action-card logout" (click)="logout()">
+      <div class="icon">🚪</div>
+      <div class="text">
+        <h3>Logout</h3>
+        <p>Sign out from the app</p>
+      </div>
+    </div>
+
+  </div>
+
+</ion-content>

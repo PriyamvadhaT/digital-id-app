@@ -1,0 +1,157 @@
+<ion-content class="dashboard-bg">
+
+  <h2 class="page-header">
+    <ion-icon name="school-outline"></ion-icon>
+    Students
+  </h2>
+
+  <!-- SEARCH -->
+
+  <ion-item class="search-box">
+    <ion-icon name="search-outline" slot="start"></ion-icon>
+
+    <ion-input
+      placeholder="Search name, department, batch or ID"
+      [(ngModel)]="searchText">
+    </ion-input>
+
+  </ion-item>
+
+
+  <!-- SORT OPTIONS -->
+
+  <div class="sort-options">
+
+    <div class="sort-item">
+      <ion-checkbox [(ngModel)]="sortBatch"></ion-checkbox>
+      <span>Batch</span>
+    </div>
+
+    <div class="sort-item">
+      <ion-checkbox [(ngModel)]="sortDepartment"></ion-checkbox>
+      <span>Department</span>
+    </div>
+
+    <div class="sort-item">
+      <ion-checkbox [(ngModel)]="sortId"></ion-checkbox>
+      <span>ID</span>
+    </div>
+
+    <div class="sort-item">
+      <ion-checkbox [(ngModel)]="sortName"></ion-checkbox>
+      <span>Name</span>
+    </div>
+
+  </div>
+
+
+  <!-- EDIT FORM -->
+
+  <div *ngIf="editingStudent" class="edit-box">
+
+    <h3>
+      <ion-icon name="create-outline"></ion-icon>
+      Edit Student
+    </h3>
+
+    <ion-item>
+      <ion-input [(ngModel)]="editingStudent.name" placeholder="Name"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-input [(ngModel)]="editingStudent.department" placeholder="Department"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-input [(ngModel)]="editingStudent.batch" placeholder="Batch"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-input [(ngModel)]="editingStudent.mobile" placeholder="Mobile"></ion-input>
+    </ion-item>
+
+    <ion-button expand="block" (click)="updateStudent()">
+      Save Changes
+    </ion-button>
+
+    <ion-button expand="block" color="medium" (click)="cancelEdit()">
+      Cancel
+    </ion-button>
+
+  </div>
+
+
+  <!-- STUDENT LIST -->
+
+  <div class="student-list">
+
+    <div class="student-item" *ngFor="let student of filteredStudents()">
+
+      <div class="student-left">
+
+        <ion-icon name="person-circle-outline"></ion-icon>
+
+        <div>
+
+          <h3>{{ student.name }}</h3>
+
+          <p>
+            {{ getDeptCode(student.department) }} •
+            {{ student.batch }} •
+            ID: {{ student.id }}
+          </p>
+
+        </div>
+
+      </div>
+
+
+      <div class="student-right">
+
+        <span
+          class="status"
+          [class.active]="student.isActive"
+          [class.inactive]="!student.isActive">
+
+          {{ student.isActive ? 'Active' : 'Inactive' }}
+
+        </span>
+
+        <div class="actions">
+
+          <ion-button
+            fill="clear"
+            color="warning"
+            (click)="editStudent(student)">
+
+            <ion-icon name="create-outline"></ion-icon>
+
+          </ion-button>
+
+          <ion-button
+            fill="clear"
+            color="primary"
+            (click)="toggleStatus(student)">
+
+            <ion-icon name="power-outline"></ion-icon>
+
+          </ion-button>
+
+          <ion-button
+            fill="clear"
+            color="danger"
+            (click)="deleteStudent(student._id)">
+
+            <ion-icon name="trash-outline"></ion-icon>
+
+          </ion-button>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</ion-content>

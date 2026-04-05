@@ -1,0 +1,49 @@
+<ion-content class="dashboard-bg">
+
+  <div class="container">
+
+    <h2 class="page-header">Admin Dashboard</h2>
+
+    <div class="menu">
+
+      <!-- Create ID -->
+      <div class="menu-card" (click)="goCreateId()">
+        <ion-icon name="add-circle-outline"></ion-icon>
+        <span>Create Digital ID</span>
+      </div>
+
+      <!-- Students -->
+      <div class="menu-card" (click)="goStudents()">
+        <ion-icon name="school-outline"></ion-icon>
+        <span>Manage Students</span>
+      </div>
+
+      <!-- Employees -->
+      <div class="menu-card" (click)="goEmployees()">
+        <ion-icon name="people-outline"></ion-icon>
+        <span>Manage Employees</span>
+      </div>
+
+      <!-- Scan -->
+      <div class="menu-card" (click)="goScan()">
+        <ion-icon name="scan-outline"></ion-icon>
+        <span>Scan ID</span>
+      </div>
+
+      <!----View Logs---->
+      <div class="menu-card" (click)="goToLogs()">
+        <ion-icon name="stats-chart-outline"></ion-icon>
+        <span>Logs</span>
+      </div>
+
+      <!-- Logout -->
+      <div class="menu-card logout-card" (click)="logout()">
+        <ion-icon name="log-out-outline"></ion-icon>
+        <span>Logout</span>
+      </div>
+
+    </div>
+
+  </div>
+
+</ion-content>

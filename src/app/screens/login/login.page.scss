@@ -1,0 +1,90 @@
+ion-content{
+  --background:linear-gradient(135deg,#eef2ff,#f8fafc);
+}
+
+/* Wrapper */
+
+.login-wrapper{
+  height:100%;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  padding:20px;
+}
+
+/* Card */
+
+.login-card{
+  width:100%;
+  max-width:360px;
+  background:white;
+  border-radius:22px;
+  box-shadow:0 14px 35px rgba(0,0,0,0.12);
+  overflow:hidden;
+}
+
+/* Header */
+
+.login-header{
+  text-align:center;
+  padding:30px 20px;
+  background:linear-gradient(135deg,#4f46e5,#6366f1);
+  color:white;
+}
+
+.logo{
+  font-size:34px;
+  margin-bottom:6px;
+}
+
+.login-header h2{
+  margin:4px 0;
+  font-size:20px;
+}
+
+.login-header p{
+  font-size:13px;
+  opacity:0.9;
+}
+
+/* Form */
+
+.form-section{
+  padding:20px;
+}
+
+/* Inputs */
+
+.input-item{
+  margin-bottom:12px;
+  border-radius:10px;
+  --background:#f1f5f9;
+}
+
+/* Button */
+
+.login-btn{
+  margin-top:10px;
+  height:45px;
+  font-size:15px;
+  border-radius:10px;
+}
+
+.eye-icon{
+  font-size:20px;
+  color:#64748b;
+  cursor:pointer;
+}
+
+/* Forgot */
+
+.forgot{
+  text-align:center;
+  margin-top:10px;
+}
+
+.forgot a{
+  font-size:13px;
+  color:#4f46e5;
+  cursor:pointer;
+}

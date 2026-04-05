@@ -1,0 +1,7 @@
+{
+  "name": "digital-id-app",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular-standalone"
+}
