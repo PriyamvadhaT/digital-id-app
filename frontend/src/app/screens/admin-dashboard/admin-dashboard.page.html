@@ -1,0 +1,79 @@
+<ion-content class="dashboard-bg">
+
+  <div class="container">
+    <div class="header-section">
+      <h2 class="page-header">Admin Control Center</h2>
+      <p class="subtitle">Select a management module to proceed</p>
+    </div>
+
+    <!-- Quick Stats Summary -->
+    <div class="quick-stats">
+      <div class="q-stat-item">
+        <span class="q-val">{{ studentCount }}</span>
+        <span class="q-lab">Students</span>
+      </div>
+      <div class="q-stat-item">
+        <span class="q-val">{{ employeeCount }}</span>
+        <span class="q-lab">Employees</span>
+      </div>
+      <div class="q-stat-item">
+        <span class="q-val">{{ scanCount }}</span>
+        <span class="q-lab">Scans</span>
+      </div>
+    </div>
+
+    <div class="menu-grid">
+      <!-- Create ID -->
+      <div class="menu-card primary-card" (click)="goCreateId()">
+        <div class="card-icon"><ion-icon name="person-add-outline"></ion-icon></div>
+        <div class="card-text">
+          <h3>Issue New ID</h3>
+          <p>Register Students & Employees</p>
+        </div>
+      </div>
+
+      <!-- Manage Section -->
+      <div class="menu-card" (click)="goStudents()">
+        <div class="card-icon"><ion-icon name="school-outline"></ion-icon></div>
+        <div class="card-text">
+          <h3>Students</h3>
+          <p>Manage Database</p>
+        </div>
+      </div>
+
+      <div class="menu-card" (click)="goEmployees()">
+        <div class="card-icon"><ion-icon name="briefcase-outline"></ion-icon></div>
+        <div class="card-text">
+          <h3>Employees</h3>
+          <p>Manage Database</p>
+        </div>
+      </div>
+
+      <!-- Secure Operations -->
+      <div class="menu-card" (click)="goScan()">
+        <div class="card-icon highlight"><ion-icon name="scan-circle-outline"></ion-icon></div>
+        <div class="card-text">
+          <h3>Scan ID</h3>
+          <p>Verify Authenticity</p>
+        </div>
+      </div>
+
+      <div class="menu-card" (click)="goToLogs()">
+        <div class="card-icon"><ion-icon name="shield-checkmark-outline"></ion-icon></div>
+        <div class="card-text">
+          <h3>Audit Logs</h3>
+          <p>Verification History</p>
+        </div>
+      </div>
+
+      <!-- Logout -->
+      <div class="menu-card logout-card" (click)="logout()">
+        <div class="card-icon"><ion-icon name="power-outline"></ion-icon></div>
+        <div class="card-text">
+          <h3>Sign Out</h3>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</ion-content>

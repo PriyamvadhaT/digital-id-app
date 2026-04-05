@@ -1,0 +1,70 @@
+<ion-content class="dashboard-bg">
+
+  <div class="dashboard-container">
+    <!-- Decorative Background Elements -->
+    <div class="header-overlay"></div>
+
+    <!-- Profile Header -->
+    <div class="profile-section" *ngIf="profile">
+      <div class="avatar-wrapper">
+        <div class="avatar-main">
+          <img *ngIf="profile.photo" [src]="'data:image/jpeg;base64,' + profile.photo" alt="Profile" class="profile-img">
+          <span *ngIf="!profile.photo">{{ profile.name?.charAt(0) }}</span>
+        </div>
+        <div class="status-ring"></div>
+      </div>
+
+      <div class="user-info">
+        <h2>{{ profile.name }}</h2>
+        <div class="role-badge">{{ role }}</div>
+      </div>
+    </div>
+
+    <!-- Action Grid -->
+    <div class="actions-grid">
+      <div class="action-card primary" (click)="goToIdCard()">
+        <div class="icon-box">
+          <ion-icon name="id-card-outline"></ion-icon>
+        </div>
+        <div class="content">
+          <h3>Digital ID Card</h3>
+          <p>Access your secure credentials</p>
+        </div>
+        <ion-icon name="chevron-forward-outline" class="arrow"></ion-icon>
+      </div>
+
+      <div class="action-card" (click)="goToChangePassword()">
+        <div class="icon-box">
+          <ion-icon name="lock-closed-outline"></ion-icon>
+        </div>
+        <div class="content">
+          <h3>Security Settings</h3>
+          <p>Update your account password</p>
+        </div>
+        <ion-icon name="chevron-forward-outline" class="arrow"></ion-icon>
+      </div>
+
+      <div class="action-card" *ngIf="role === 'Admin' || role === 'Employee'" (click)="goToScan()">
+        <div class="icon-box special">
+          <ion-icon name="scan-circle-outline"></ion-icon>
+        </div>
+        <div class="content">
+          <h3>Verification Scanner</h3>
+          <p>Scan & verify identities</p>
+        </div>
+        <ion-icon name="chevron-forward-outline" class="arrow"></ion-icon>
+      </div>
+
+      <div class="action-card logout-trigger" (click)="logout()">
+        <div class="icon-box danger">
+          <ion-icon name="log-out-outline"></ion-icon>
+        </div>
+        <div class="content">
+          <h3>Sign Out</h3>
+          <p>End your current session</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</ion-content>

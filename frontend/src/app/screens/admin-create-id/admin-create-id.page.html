@@ -1,0 +1,137 @@
+<ion-content class="page-bg">
+
+  <div class="container mobile-padding">
+    <div class="header-section">
+      <h1 class="page-title">Digital ID Issuance</h1>
+      <p class="page-subtitle">Register a new student or employee credential</p>
+    </div>
+
+    <div class="form-grid">
+      <!-- Role and Identity -->
+      <div class="form-card main-card">
+        <h3 class="card-title"><ion-icon name="person-outline"></ion-icon> Primary Identity</h3>
+        
+        <ion-item class="custom-item">
+          <ion-label position="stacked">User Category</ion-label>
+          <ion-select [(ngModel)]="role" (ionChange)="generatePreview()" interface="action-sheet">
+            <ion-select-option value="Student">Student</ion-select-option>
+            <ion-select-option value="Employee">Employee</ion-select-option>
+          </ion-select>
+        </ion-item>
+
+        <ion-item class="custom-item">
+          <ion-input
+            label="Full Legal Name"
+            labelPlacement="stacked"
+            placeholder="e.g. John Doe"
+            [(ngModel)]="form.name">
+          </ion-input>
+        </ion-item>
+
+        <ion-item class="custom-item">
+          <ion-label position="stacked">Academic/Staff Department</ion-label>
+          <ion-select [(ngModel)]="form.department" (ionChange)="generatePreview()" interface="action-sheet">
+            <ion-select-option value="Computer Science and Engineering">Computer Science</ion-select-option>
+            <ion-select-option value="Electronics and Communication Engineering">Electronics & Communication</ion-select-option>
+            <ion-select-option value="Mechanical Engineering">Mechanical Engineering</ion-select-option>
+            <ion-select-option value="Civil Engineering">Civil Engineering</ion-select-option>
+            <ion-select-option value="Electrical and Electronics Engineering">Electrical Engineering</ion-select-option>
+            <ion-select-option value="Information Technology">Information Technology</ion-select-option>
+            <ion-select-option value="Artificial Intelligence and Machine Learning">AI & ML</ion-select-option>
+            <ion-select-option value="Artificial Intelligence and Data Science">AI & Data Science</ion-select-option>
+            <ion-select-option value="Aeronautical Engineering">Aeronautical / Aerospace</ion-select-option>
+            <ion-select-option value="Biotechnology">Biotechnology</ion-select-option>
+            <ion-select-option value="Textile Technology">Textile Technology</ion-select-option>
+          </ion-select>
+        </ion-item>
+
+        <div class="student-specific" *ngIf="role === 'Student'">
+          <ion-item class="custom-item">
+            <ion-input
+              label="Academic Batch"
+              labelPlacement="stacked"
+              placeholder="e.g. 2023 - 2027"
+              [(ngModel)]="form.batch"
+              (ionInput)="generatePreview()">
+            </ion-input>
+          </ion-item>
+
+          <ion-item class="custom-item">
+            <ion-label position="stacked">Degree Course</ion-label>
+            <ion-select [(ngModel)]="form.course" (ionChange)="generatePreview()" interface="popover">
+              <ion-select-option value="Bachelor of Engineering">B.E.</ion-select-option>
+              <ion-select-option value="Bachelor of Technology">B.Tech</ion-select-option>
+            </ion-select>
+          </ion-item>
+        </div>
+      </div>
+
+      <!-- ID Preview Display -->
+      <div class="id-preview-box shadow-soft" *ngIf="previewId">
+        <span class="preview-label">Generated Credential ID</span>
+        <h2 class="preview-value">{{ previewId }}</h2>
+        <div class="hologram-strip"></div>
+      </div>
+
+      <!-- Contact and Security -->
+      <div class="form-card">
+        <h3 class="card-title"><ion-icon name="call-outline"></ion-icon> Contact Details</h3>
+        
+        <ion-item class="custom-item">
+          <ion-input
+            label="Official Email"
+            labelPlacement="stacked"
+            placeholder="user@example.com"
+            [(ngModel)]="form.email">
+          </ion-input>
+        </ion-item>
+
+        <ion-item class="custom-item">
+          <ion-input
+            label="Primary Mobile"
+            labelPlacement="stacked"
+            placeholder="+91 00000 00000"
+            type="tel"
+            [(ngModel)]="form.phone">
+          </ion-input>
+        </ion-item>
+
+        <ion-item class="custom-item" *ngIf="role === 'Student'">
+          <ion-input
+            label="Emergency Contact (Parent)"
+            labelPlacement="stacked"
+            placeholder="+91 00000 00000"
+            type="tel"
+            [(ngModel)]="form.parentMobile">
+          </ion-input>
+        </ion-item>
+      </div>
+
+      <!-- Biometric / Photo -->
+      <div class="form-card photo-card">
+        <h3 class="card-title"><ion-icon name="camera-outline"></ion-icon> Identity Photo</h3>
+        
+        <div class="photo-upload-container">
+          <div class="photo-mask" [class.has-photo]="photoPreview">
+            <img *ngIf="photoPreview" [src]="photoPreview" class="portrait-preview" />
+            <div class="upload-placeholder" *ngIf="!photoPreview">
+              <ion-icon name="cloud-upload-outline"></ion-icon>
+              <span>Tap to Upload Photo</span>
+            </div>
+            <input type="file" accept="image/*" (change)="onFileSelected($event)" class="file-input" />
+          </div>
+          <p class="photo-hint">High-quality portrait required for secure identification</p>
+        </div>
+      </div>
+
+      <!-- Final Action -->
+      <div class="action-footer">
+        <ion-button expand="block" mode="ios" class="create-id-btn" (click)="submit()">
+          Finalize & Issue ID
+        </ion-button>
+        <p class="security-disclaimer">By clicking, you authorize the generation of this secure digital credential.</p>
+      </div>
+    </div>
+  </div>
+
+</ion-content>

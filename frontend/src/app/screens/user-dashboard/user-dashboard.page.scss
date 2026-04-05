@@ -1,0 +1,127 @@
+.dashboard-bg {
+  --background: #f8fafc;
+}
+
+.dashboard-container {
+  padding: 0;
+  position: relative;
+}
+
+.header-overlay {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 220px;
+  background: linear-gradient(135deg, #4f46e5, #818cf8);
+  border-radius: 0 0 40px 40px;
+  z-index: 0;
+}
+
+/* 🏔️ Profile Section */
+.profile-section {
+  position: relative;
+  z-index: 1;
+  padding: 60px 24px 30px;
+  text-align: center;
+  color: white;
+
+  .avatar-wrapper {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    margin: 0 auto 16px;
+
+    .avatar-main {
+      width: 100%; height: 100%;
+      background: white; color: #4f46e5;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 40px; font-weight: 800;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      border: 4px solid rgba(255, 255, 255, 0.3);
+      overflow: hidden;
+
+      .profile-img { width: 100%; height: 100%; object-fit: cover; }
+    }
+
+    .status-ring {
+      position: absolute; top: -6px; left: -6px; right: -6px; bottom: -6px;
+      border: 2px dashed rgba(255, 255, 255, 0.5);
+      border-radius: 50%;
+    }
+  }
+
+  h2 { margin: 0; font-size: 26px; font-weight: 800; letter-spacing: -0.5px; }
+
+  .role-badge {
+    display: inline-block;
+    padding: 6px 16px;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(8px);
+    border-radius: 100px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-top: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+}
+
+/* ⚡ Actions Grid */
+.actions-grid {
+  position: relative;
+  z-index: 1;
+  padding: 0 20px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.action-card {
+  background: white;
+  padding: 20px;
+  border-radius: 24px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05);
+  border: 1px solid #f1f5f9;
+  transition: transform 0.2s;
+
+  &:active { transform: scale(0.97); }
+
+  .icon-box {
+    width: 52px; height: 52px;
+    background: #f1f5f9;
+    border-radius: 16px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px; color: #4f46e5;
+
+    &.special { background: #fff1f2; color: #e11d48; }
+    &.danger { background: #fef2f2; color: #dc2626; }
+  }
+
+  .content {
+    flex: 1;
+    h3 { margin: 0; font-size: 16px; font-weight: 700; color: #0f172a; }
+    p { margin: 2px 0 0; font-size: 12px; color: #64748b; font-weight: 500; }
+  }
+
+  .arrow { color: #cbd5e1; font-size: 18px; }
+
+  &.primary {
+    border-left: 5px solid #4f46e5;
+  }
+}
+
+.logout-trigger {
+  margin-top: 10px;
+  background: #fffafa;
+  border: 1px solid #fee2e2;
+}
+
+/* 📱 Mobile Safety */
+@media (max-width: 360px) {
+  .profile-section h2 { font-size: 22px; }
+  .action-card { padding: 16px; }
+}

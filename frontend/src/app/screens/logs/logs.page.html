@@ -1,0 +1,114 @@
+<ion-content class="logs-bg">
+
+  <!-- Pull to refresh -->
+  <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <div class="container">
+    <div class="header-section">
+      <h2 class="title">Security Audit Logs</h2>
+      <p class="subtitle">Real-time identity verification tracking</p>
+    </div>
+
+    <!-- 📊 STATS DASHBOARD -->
+    <div class="stats-grid">
+      <div class="stat-card total">
+        <div class="stat-icon"><ion-icon name="document-outline"></ion-icon></div>
+        <div class="stat-info">
+          <span class="stat-label">Total Scans</span>
+          <h3 class="stat-value">{{ stats.total }}</h3>
+        </div>
+      </div>
+      <div class="stat-card success">
+        <div class="stat-icon"><ion-icon name="checkmark-circle-outline"></ion-icon></div>
+        <div class="stat-info">
+          <span class="stat-label">Valid IDs</span>
+          <h3 class="stat-value">{{ stats.valid }}</h3>
+        </div>
+      </div>
+      <div class="stat-card error">
+        <div class="stat-icon"><ion-icon name="close-circle-outline"></ion-icon></div>
+        <div class="stat-info">
+          <span class="stat-label">Invalid</span>
+          <h3 class="stat-value">{{ stats.invalid }}</h3>
+        </div>
+      </div>
+    </div>
+
+    <!-- ⚙️ ADVANCED FILTERS -->
+    <div class="filters-panel">
+      <div class="filter-row search-row">
+        <div class="search-input-wrap">
+          <ion-icon name="search-outline"></ion-icon>
+          <input type="text" placeholder="Search name or ID..." [(ngModel)]="searchText">
+        </div>
+      </div>
+
+      <div class="filter-row options-row">
+        <div class="date-group">
+          <div class="date-input">
+            <ion-icon name="calendar-outline"></ion-icon>
+            <input type="date" [(ngModel)]="fromDate">
+          </div>
+          <span class="date-sep">to</span>
+          <div class="date-input">
+            <ion-icon name="calendar-outline"></ion-icon>
+            <input type="date" [(ngModel)]="toDate">
+          </div>
+        </div>
+
+        <div class="select-wrap">
+          <ion-icon name="funnel-outline"></ion-icon>
+          <select [(ngModel)]="resultFilter">
+            <option value="">All Results</option>
+            <option value="VALID">Valid</option>
+            <option value="INVALID">Invalid</option>
+            <option value="NOT ALLOWED">Not Allowed</option>
+          </select>
+        </div>
+
+        <button class="apply-filters-btn" (click)="loadLogs()">
+          Update
+        </button>
+      </div>
+    </div>
+
+    <!-- 📋 AUDIT TRAIL -->
+    <div class="audit-trail">
+      <div *ngIf="filteredLogs().length === 0" class="empty-state">
+        <div class="empty-icon"><ion-icon name="alert-circle-outline"></ion-icon></div>
+        <p>No verification logs found for current filters</p>
+      </div>
+
+      <div *ngFor="let log of filteredLogs()" class="audit-entry shadow-soft">
+        <div class="entry-line"></div>
+        
+        <div class="entry-header">
+          <div class="user-profile">
+            <div class="user-avatar-mini">{{ log.name?.charAt(0) }}</div>
+            <div class="user-meta">
+              <h4>{{ log.name }}</h4>
+              <span>{{ log.userId }}</span>
+            </div>
+          </div>
+          
+          <div class="result-badge" [ngClass]="log.result.toLowerCase().replace(' ', '')">
+            {{ log.result }}
+          </div>
+        </div>
+
+        <div class="entry-footer">
+          <div class="timestamp">
+            <ion-icon name="time-outline"></ion-icon>
+            {{ log.date | date:'MMM d, h:mm a' }}
+          </div>
+          <div class="scanned-by" *ngIf="log.scannedBy">
+            Verified by: <strong>{{ log.scannedBy.username }}</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</ion-content>

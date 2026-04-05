@@ -1,0 +1,120 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar class="premium-header">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/dashboard" [icon]="'chevron-back-outline'"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Digital ID Card</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="loadId()">
+        <ion-icon name="refresh-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="page-bg">
+
+  <!-- LOADING STATE -->
+  <div class="status-container" *ngIf="isLoading">
+    <ion-spinner name="crescent" color="primary"></ion-spinner>
+    <p>Authenticating Digital ID...</p>
+  </div>
+
+  <!-- ERROR STATE -->
+  <div class="status-container" *ngIf="!isLoading && errorMessage">
+    <div class="error-box">
+      <ion-icon name="alert-circle-outline" color="danger"></ion-icon>
+      <h3>Sync Failed</h3>
+      <p>{{ errorMessage }}</p>
+      <ion-button (click)="loadId()" fill="clear" color="primary">
+        Try Syncing Again
+      </ion-button>
+    </div>
+  </div>
+
+  <!-- ID CARD DISPLAY -->
+  <div class="id-wrapper" *ngIf="!isLoading && profile">
+    <div class="id-card card-ripple">
+      <!-- Decorative Background Elements -->
+      <div class="card-bg-glow"></div>
+      <div class="card-pattern"></div>
+      <div class="card-glint"></div>
+
+      <!-- Header Section -->
+      <div class="card-header">
+        <div class="avatar-frame">
+          <div class="avatar-main">
+            <img *ngIf="profile.photo" [src]="'data:image/jpeg;base64,' + profile.photo" alt="Profile" class="profile-img">
+            <span *ngIf="!profile.photo">{{ profile.name?.charAt(0) }}</span>
+          </div>
+          <div class="avatar-ring"></div>
+          <div class="verified-seal">
+            <ion-icon name="shield-checkmark-outline"></ion-icon>
+          </div>
+        </div>
+        
+        <div class="user-identity">
+          <h2>{{ profile.name }}</h2>
+          <p class="user-id">ID: {{ profile.id }}</p>
+          <div class="role-badge" [class.student]="role === 'Student'" [class.employee]="role === 'Employee'">
+            {{ role }}
+          </div>
+        </div>
+      </div>
+
+      <!-- Core Details Tray -->
+      <div class="details-tray">
+        <div class="detail-item">
+          <span class="label">Department</span>
+          <span class="value">{{ profile.department }}</span>
+        </div>
+        
+        <div class="detail-row" *ngIf="profile.batch || profile.course">
+          <div class="detail-item" *ngIf="profile.batch">
+            <span class="label">Batch</span>
+            <span class="value">{{ profile.batch }}</span>
+          </div>
+          <div class="detail-item" *ngIf="profile.course">
+            <span class="label">Course</span>
+            <span class="value">{{ profile.course }}</span>
+          </div>
+        </div>
+
+        <div class="detail-row">
+          <div class="detail-item">
+            <span class="label">Mobile</span>
+            <span class="value">{{ profile.mobile }}</span>
+          </div>
+          <div class="detail-item" *ngIf="profile.parentMobile">
+            <span class="label">Parent Contact</span>
+            <span class="value">{{ profile.parentMobile }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Authenticator QR -->
+      <div class="qr-verify-section">
+        <div class="qr-container">
+          <qrcode
+            [qrdata]="qrValue"
+            [width]="120"
+            [margin]="0"
+            [colorDark]="'#1e1b4b'"
+            [errorCorrectionLevel]="'M'">
+          </qrcode>
+          <div class="qr-corners">
+            <span></span><span></span><span></span><span></span>
+          </div>
+        </div>
+        <p class="verify-instruction">SCAN TO VERIFY IDENTITY</p>
+      </div>
+
+      <!-- Branding / Footer -->
+      <div class="card-footer">
+        <div class="logo-text">DIGITAL ID PORTAL</div>
+        <div class="security-chip"></div>
+      </div>
+    </div>
+  </div>
+
+</ion-content>

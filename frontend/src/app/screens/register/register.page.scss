@@ -1,0 +1,139 @@
+.page-bg {
+  --background: #f8fafc;
+}
+
+.login-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100%;
+  padding: 24px 16px;
+  position: relative;
+}
+
+.login-decor {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 45%;
+  background: linear-gradient(135deg, #4f46e5, #0ea5e9);
+  border-radius: 0 0 60px 60px;
+  z-index: 0;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 400px;
+  background: white;
+  border-radius: 32px;
+  overflow: hidden;
+  position: relative;
+  z-index: 1;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* 🏔️ Header Styling */
+.login-header {
+  text-align: center;
+  padding: 40px 24px 30px;
+
+  .logo-ring {
+    width: 64px; height: 64px;
+    background: #f1f5f9;
+    border-radius: 20px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 32px;
+    margin: 0 auto 16px;
+    color: #4f46e5;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  }
+
+  .brand-title {
+    margin: 0;
+    font-size: 28px;
+    font-weight: 800;
+    color: #0f172a;
+    letter-spacing: -1px;
+  }
+
+  .brand-subtitle {
+    margin: 6px 0 0;
+    font-size: 13px;
+    color: #64748b;
+    font-weight: 500;
+  }
+}
+
+/* 📋 Form Section */
+.form-section {
+  padding: 0 24px 32px;
+
+  .input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+}
+
+.modern-input {
+  --background: #f8fafc;
+  --border-radius: 16px;
+  --padding-start: 16px;
+  --inner-padding-end: 16px;
+  border: 1px solid #e2e8f0;
+  transition: all 0.2s;
+
+  &.item-has-focus {
+    border-color: #4f46e5;
+    box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+  }
+
+  ion-icon { font-size: 20px; color: #94a3b8; }
+  ion-input { font-size: 15px; font-weight: 600; color: #1e293b; --padding-start: 12px; }
+
+  .eye-icon { cursor: pointer; }
+}
+
+/* 🏁 Actions */
+.action-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.primary-login-btn {
+  --background: linear-gradient(135deg, #4f46e5, #0ea5e9);
+  --border-radius: 16px;
+  --box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.3);
+  height: 56px;
+  font-size: 16px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.secondary-reg-btn {
+  --color: #4f46e5;
+  font-weight: 700;
+  font-size: 13px;
+  height: 40px;
+}
+
+.security-note {
+  margin-top: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 10px;
+  color: #94a3b8;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* 📱 Mobile Specifics */
+@media (max-width: 360px) {
+  .login-header { padding: 30px 20px 20px; .brand-title { font-size: 22px; } }
+  .form-section { padding: 0 20px 20px; }
+}

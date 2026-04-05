@@ -1,0 +1,317 @@
+.premium-header {
+  --background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+  --color: white;
+  --padding-top: 10px;
+  --padding-bottom: 10px;
+
+  ion-title {
+    font-weight: 800;
+    font-size: 20px;
+    letter-spacing: -0.5px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+
+  ion-back-button, ion-button {
+    --color: white;
+  }
+}
+
+.search-toolbar {
+  --background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+  padding: 0 8px 12px;
+
+  .custom-search {
+    --background: rgba(255, 255, 255, 0.15);
+    --border-radius: 14px;
+    --placeholder-color: rgba(255, 255, 255, 0.8);
+    --color: white;
+    --icon-color: white;
+    --clear-button-color: white;
+    padding: 0;
+    margin: 0;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: none;
+  }
+}
+
+.dashboard-bg {
+  --background: #f8fafc;
+}
+
+.employee-list-container {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.employee-card {
+  background: white;
+  border-radius: 20px;
+  display: flex;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  border: 1px solid #f1f5f9;
+  transition: all 0.3s ease;
+
+  &.inactive-card {
+    opacity: 0.8;
+    filter: grayscale(0.5);
+  }
+
+  &:active {
+    transform: scale(0.98);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+  }
+
+  .card-status-strip {
+    width: 6px;
+    background: #94a3b8;
+    &.active {
+      background: #22c55e;
+    }
+  }
+
+  .card-content {
+    flex: 1;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    .card-top {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+
+      .user-avatar-box {
+        position: relative;
+        .avatar-circle {
+          width: 48px;
+          height: 48px;
+          background: #eff6ff;
+          border-radius: 14px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          ion-icon {
+            font-size: 32px;
+            color: #3b82f6;
+          }
+        }
+        .status-indicator {
+          position: absolute;
+          bottom: -2px;
+          right: -2px;
+          width: 14px;
+          height: 14px;
+          border-radius: 50%;
+          background: #ef4444;
+          border: 2px solid white;
+          &.active {
+            background: #22c55e;
+          }
+        }
+      }
+
+      .user-main-info {
+        flex: 1;
+        h3 {
+          margin: 0;
+          font-size: 16px;
+          font-weight: 700;
+          color: #0f172a;
+        }
+        .user-id {
+          font-size: 12px;
+          font-weight: 600;
+          color: #64748b;
+          letter-spacing: 0.5px;
+        }
+      }
+
+      .role-badge {
+        background: #f1f5f9;
+        color: #475569;
+        font-size: 10px;
+        font-weight: 800;
+        text-transform: uppercase;
+        padding: 4px 8px;
+        border-radius: 8px;
+        letter-spacing: 0.5px;
+      }
+    }
+
+    .card-details {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+
+      .detail-pill {
+        background: #f8fafc;
+        border: 1px solid #f1f5f9;
+        padding: 6px 12px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        
+        ion-icon {
+          font-size: 14px;
+          color: #6366f1;
+        }
+        
+        span {
+          font-size: 12px;
+          font-weight: 600;
+          color: #1e293b;
+        }
+      }
+    }
+
+    .card-actions-v2 {
+      display: flex;
+      justify-content: flex-end;
+      gap: 4px;
+      margin-top: 4px;
+      padding-top: 12px;
+      border-top: 1px dashed #f1f5f9;
+
+      ion-button {
+        --padding-start: 8px;
+        --padding-end: 8px;
+        height: 36px;
+        margin: 0;
+
+        ion-icon {
+          font-size: 20px;
+        }
+
+        &.btn-edit { --color: #6366f1; }
+        &.btn-power-off { --color: #ef4444; }
+        &.btn-power-on { --color: #22c55e; }
+        &.btn-delete { --color: #94a3b8; }
+      }
+    }
+  }
+}
+
+.empty-state {
+  padding: 60px 40px;
+  text-align: center;
+  .empty-icon-box {
+    width: 80px;
+    height: 80px;
+    background: #f1f5f9;
+    border-radius: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+    ion-icon {
+      font-size: 40px;
+      color: #94a3b8;
+    }
+  }
+  h4 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 700;
+    color: #0f172a;
+  }
+  p {
+    margin: 8px 0 0;
+    font-size: 14px;
+    color: #64748b;
+  }
+}
+
+/* Modal Styling */
+.bottom-sheet-modal {
+  --border-radius: 30px 30px 0 0;
+  --box-shadow: 0 -10px 40px rgba(0,0,0,0.1);
+  
+  ion-toolbar {
+    --background: white;
+    --color: #0f172a;
+    font-weight: 700;
+  }
+
+  .filter-group {
+    .group-label {
+      display: block;
+      padding: 0 4px 12px;
+      font-size: 14px;
+      font-weight: 800;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .filter-item {
+      --background: #f8fafc;
+      --border-radius: 12px;
+      --padding-start: 16px;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #1e293b;
+      
+      ion-checkbox {
+        --size: 20px;
+        --checkbox-background-checked: #6366f1;
+        --border-color: #cbd5e1;
+      }
+    }
+  }
+}
+
+.edit-modal-premium {
+  --background: #f8fafc;
+  
+  .edit-form-card {
+    background: white;
+    border-radius: 20px;
+    padding: 20px;
+    border: 1px solid #f1f5f9;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+
+    .premium-input-item {
+      --background: #f8fafc;
+      --border-radius: 12px;
+      --padding-start: 16px;
+      margin-bottom: 16px;
+      
+      ion-label {
+        font-size: 13px;
+        font-weight: 700;
+        color: #6366f1;
+        margin-bottom: 8px;
+      }
+      
+      ion-input {
+        font-weight: 600;
+        color: #1e293b;
+      }
+    }
+
+    .form-actions-v2 {
+      margin-top: 24px;
+      .btn-save {
+        --background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+        --border-radius: 14px;
+        --box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3);
+        height: 52px;
+        font-weight: 700;
+      }
+    }
+  }
+}
+
+
+@media (max-width: 480px) {
+  .employee-list {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,82 @@
+<ion-content class="dashboard-bg">
+
+  <div class="scanner-wrapper mobile-container">
+    <!-- Header Section -->
+    <div class="header-section">
+      <h2 class="page-title">
+        <ion-icon name="qr-code-outline"></ion-icon>
+        {{ role === 'Admin' ? 'Terminal Scanner' : 'Identity Verification' }}
+      </h2>
+      <p class="page-subtitle">Align the Digital ID within the frame to verify</p>
+    </div>
+
+    <!-- Scanner Frame with Animated HUD -->
+    <div class="scanner-container shadow-deep">
+      <div class="scanner-hud">
+        <div class="corner tl"></div><div class="corner tr"></div>
+        <div class="corner bl"></div><div class="corner br"></div>
+        <div class="scan-line-v2"></div>
+      </div>
+      
+      <zxing-scanner
+        (scanSuccess)="onCodeResult($event)"
+        [formats]="allowedFormats">
+      </zxing-scanner>
+    </div>
+
+    <div class="scanner-controls">
+      <div class="hint-pill">
+        <ion-icon name="flash-outline"></ion-icon>
+        <span>Automatic focus active</span>
+      </div>
+    </div>
+
+    <!-- Verification Result Dialog -->
+    <div *ngIf="scanResult" class="result-backdrop animated-fade-in">
+      <div class="result-card-v2" [class.is-valid]="verification === 'VALID'">
+        
+        <div class="card-status-banner">
+          <ion-icon [name]="verification === 'VALID' ? 'shield-checkmark' : 'alert-circle'"></ion-icon>
+          <span>{{ verification }} IDENTITY</span>
+        </div>
+
+        <div class="user-profile-summary">
+          <div class="portrait-frame">
+            <img 
+              *ngIf="scanResult.photo"
+              [src]="'data:image/jpeg;base64,' + scanResult.photo"
+              class="portrait-img"
+            />
+            <div *ngIf="!scanResult.photo" class="portrait-placeholder">
+              {{ scanResult.name?.charAt(0) }}
+            </div>
+            <div class="verify-badge" [class.valid]="verification === 'VALID'">
+              <ion-icon [name]="verification === 'VALID' ? 'checkmark' : 'close'"></ion-icon>
+            </div>
+          </div>
+
+          <div class="user-meta">
+            <h3>{{ scanResult.name }}</h3>
+            <p class="user-id-text">ID: {{ scanResult.id }}</p>
+          </div>
+        </div>
+
+        <div class="detail-grid">
+          <div class="detail-box">
+            <span class="label">Organization Unit</span>
+            <span class="value">{{ getDeptCode(scanResult.department) }}</span>
+          </div>
+          <div class="detail-box">
+            <span class="label">Status</span>
+            <span class="value status-text">{{ verification === 'VALID' ? 'Authorized' : 'Restricted' }}</span>
+          </div>
+        </div>
+
+        <ion-button expand="block" mode="ios" (click)="scanResult = null" class="dismiss-btn">
+          Scan Another
+        </ion-button>
+      </div>
+    </div>
+  </div>
+
+</ion-content>

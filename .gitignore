@@ -13,58 +13,60 @@ $RECYCLE.BIN/
 log.txt
 
 
-/.sourcemaps
-/.versions
-/coverage
+# Source maps
+**/.sourcemaps
+**/.versions
+**/coverage/
 
-# Ionic
-/.ionic
-/www
-/platforms
-/plugins
-
-# Compiled output
-/dist
-/tmp
-/out-tsc
-/bazel-out
+# Ionic / Build
+**/.ionic/
+www/
+**/www/
+**/platforms/
+**/plugins/
+**/dist/
+**/tmp/
+**/out-tsc/
+**/bazel-out/
 
 # Node
-/node_modules
+node_modules/
+**/node_modules/
 npm-debug.log
 yarn-error.log
 
-# IDEs and editors
+# IDEs
 .idea/
-.project
-.classpath
-.c9/
-*.launch
-.settings/
-*.sublime-project
-*.sublime-workspace
+**/.idea/
+.vscode/
+**/.vscode/
+.history/
+**/.history/
 
-# Visual Studio Code
-.vscode/*
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
-.history/*
-
-
-# Miscellaneous
-/.angular
-/.angular/cache
+# Angular / Nx
+.angular/
+**/.angular/
+.nx/
+**/.nx/
 .sass-cache/
-/.nx
-/.nx/cache
-/connect.lock
-/coverage
-/libpeerconnection.log
+**/.sass-cache/
+connect.lock
+libpeerconnection.log
 testem.log
-/typings
+**/typings/
 
 # System files
 .DS_Store
 Thumbs.db
+
+# 🛡️ SECURITY: Sensitive Environment Files
+.env
+.env.production
+.env.local
+.env.*.local
+**/ .env
+backend/.env
+
+# Heavy dependencies
+node_modules/
+**/node_modules/

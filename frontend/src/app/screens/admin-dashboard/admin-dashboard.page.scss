@@ -1,0 +1,129 @@
+.dashboard-bg {
+  --background: #f8fafc;
+}
+
+.container {
+  padding: 24px 16px 40px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* 🏔️ Header Styling */
+.header-section {
+  text-align: center;
+  margin-bottom: 30px;
+
+  .page-header {
+    font-size: 28px;
+    font-weight: 800;
+    color: #0f172a;
+    margin: 0;
+    letter-spacing: -1px;
+  }
+
+  .subtitle {
+    font-size: 14px;
+    color: #64748b;
+    margin: 6px 0 0;
+    font-weight: 500;
+  }
+}
+
+/* 📊 Quick Stats */
+.quick-stats {
+  display: flex;
+  justify-content: space-between;
+  background: white;
+  padding: 20px;
+  border-radius: 24px;
+  margin-bottom: 30px;
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.05);
+  border: 1px solid #f1f5f9;
+
+  .q-stat-item {
+    text-align: center;
+    flex: 1;
+    border-right: 1px solid #f1f5f9;
+    &:last-child { border-right: none; }
+
+    .q-val { display: block; font-size: 18px; font-weight: 800; color: #6366f1; }
+    .q-lab { display: block; font-size: 10px; font-weight: 700; color: #94a3b8; text-transform: uppercase; margin-top: 2px; }
+  }
+}
+
+/* 🏎️ Menu Grid */
+.menu-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* 🚀 2-column grid by default */
+  gap: 16px;
+}
+
+.menu-card {
+  background: white;
+  padding: 24px 16px;
+  border-radius: 24px;
+  text-align: center;
+  border: 1px solid #f1f5f9;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+
+  &:active { transform: scale(0.95); }
+
+  .card-icon {
+    width: 50px;
+    height: 50px;
+    background: #eff6ff;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    color: #3b82f6;
+
+    &.highlight { background: #fdf2f8; color: #db2777; }
+  }
+
+  .card-text {
+    h3 { margin: 0; font-size: 15px; font-weight: 700; color: #1e293b; }
+    p { margin: 4px 0 0; font-size: 11px; color: #64748b; font-weight: 500; }
+  }
+
+  &.primary-card {
+    grid-column: span 2; /* 🌍 Full width for primary action */
+    flex-direction: row;
+    text-align: left;
+    padding: 20px 24px;
+    background: linear-gradient(135deg, #6366f1, #4338ca);
+    color: white;
+
+    .card-icon { background: rgba(255, 255, 255, 0.2); color: white; }
+    .card-text {
+      h3 { color: white; font-size: 18px; }
+      p { color: rgba(255, 255, 255, 0.8); }
+    }
+  }
+
+  &.logout-card {
+    grid-column: span 2;
+    margin-top: 10px;
+    background: #fef2f2;
+    border-color: #fee2e2;
+    flex-direction: row;
+    padding: 16px;
+    height: 60px;
+    
+    .card-icon { background: #fee2e2; color: #ef4444; width: 40px; height: 40px; font-size: 20px; }
+    .card-text h3 { color: #b91c1c; }
+  }
+}
+
+/* 📱 Small Device Tweaks */
+@media (max-width: 360px) {
+  .menu-grid { grid-template-columns: 1fr; }
+  .menu-card.primary-card { grid-column: span 1; }
+  .menu-card.logout-card { grid-column: span 1; }
+}

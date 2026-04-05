@@ -1,0 +1,177 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar class="premium-header">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/admin-dashboard" [icon]="'chevron-back-outline'"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Student Directory</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="isSortModalOpen = true">
+        <ion-icon name="filter-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+
+  <ion-toolbar class="search-toolbar">
+    <ion-searchbar 
+      [(ngModel)]="searchText" 
+      placeholder="Search students..." 
+      class="custom-search"
+      animated="true">
+    </ion-searchbar>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="dashboard-bg">
+
+  <!-- STUDENT LIST -->
+  <div class="student-list-container">
+    <div class="student-card" *ngFor="let student of filteredStudents()" [class.inactive-card]="!student.isActive">
+      
+      <div class="card-status-strip" [class.active]="student.isActive"></div>
+
+      <div class="card-content">
+        <div class="card-top">
+          <div class="user-avatar-box">
+            <div class="avatar-circle">
+              <ion-icon name="person-circle-outline"></ion-icon>
+            </div>
+            <div class="status-indicator" [class.active]="student.isActive"></div>
+          </div>
+          
+          <div class="user-main-info">
+            <h3>{{ student.name }}</h3>
+            <span class="user-id">#{{ student.id }}</span>
+          </div>
+
+          <div class="role-badge">Student</div>
+        </div>
+
+        <div class="card-details">
+          <div class="detail-pill">
+            <ion-icon name="school-outline"></ion-icon>
+            <span>{{ getDeptCode(student.department) }}</span>
+          </div>
+          <div class="detail-pill">
+            <ion-icon name="calendar-outline" *ngIf="false"></ion-icon>
+            <span class="batch-label">Batch:</span>
+            <span>{{ student.batch }}</span>
+          </div>
+        </div>
+
+        <div class="card-actions-v2">
+          <ion-button fill="clear" class="btn-edit" (click)="editStudent(student)">
+            <ion-icon name="create-outline"></ion-icon>
+          </ion-button>
+
+          <ion-button fill="clear" [class.btn-power-off]="student.isActive" [class.btn-power-on]="!student.isActive" (click)="toggleStatus(student)">
+            <ion-icon name="power-outline"></ion-icon>
+          </ion-button>
+
+          <ion-button fill="clear" class="btn-delete" (click)="deleteStudent(student._id)">
+            <ion-icon name="trash-outline"></ion-icon>
+          </ion-button>
+        </div>
+      </div>
+    </div>
+
+    <!-- EMPTY STATE -->
+    <div class="empty-state" *ngIf="filteredStudents().length === 0">
+      <div class="empty-icon-box">
+        <ion-icon name="search-outline"></ion-icon>
+      </div>
+      <h4>No students found</h4>
+      <p>Try adjusting your search or filters</p>
+    </div>
+  </div>
+
+
+  <!-- SORT MODAL -->
+  <ion-modal [isOpen]="isSortModalOpen" (didDismiss)="isSortModalOpen = false" [initialBreakpoint]="0.4" [breakpoints]="[0, 0.4, 0.6]" class="bottom-sheet-modal">
+    <ng-template>
+      <ion-header class="ion-no-border">
+        <ion-toolbar>
+          <ion-title>Sort & Filter</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="isSortModalOpen = false">Done</ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content class="ion-padding">
+        <div class="filter-group">
+          <ion-label class="group-label">Sort By</ion-label>
+          
+          <ion-item lines="none" class="filter-item">
+            <ion-label>Name</ion-label>
+            <ion-checkbox slot="end" [(ngModel)]="sortName"></ion-checkbox>
+          </ion-item>
+
+          <ion-item lines="none" class="filter-item">
+            <ion-label>Student ID</ion-label>
+            <ion-checkbox slot="end" [(ngModel)]="sortId"></ion-checkbox>
+          </ion-item>
+
+          <ion-item lines="none" class="filter-item">
+            <ion-label>Department</ion-label>
+            <ion-checkbox slot="end" [(ngModel)]="sortDepartment"></ion-checkbox>
+          </ion-item>
+
+          <ion-item lines="none" class="filter-item">
+            <ion-label>Batch</ion-label>
+            <ion-checkbox slot="end" [(ngModel)]="sortBatch"></ion-checkbox>
+          </ion-item>
+        </div>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+
+
+  <!-- EDIT MODAL -->
+  <ion-modal [isOpen]="!!editingStudent" (didDismiss)="cancelEdit()" class="edit-modal-premium">
+    <ng-template>
+      <ion-header class="ion-no-border">
+        <ion-toolbar class="premium-header">
+          <ion-title>Edit Student</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="cancelEdit()">
+              <ion-icon name="close-outline"></ion-icon>
+            </ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+
+      <ion-content class="ion-padding dashboard-bg">
+        <div class="edit-form-card" *ngIf="editingStudent">
+          <ion-item lines="none" class="premium-input-item">
+            <ion-label position="stacked">Full Name</ion-label>
+            <ion-input [(ngModel)]="editingStudent.name" placeholder="Enter name"></ion-input>
+          </ion-item>
+
+          <ion-item lines="none" class="premium-input-item">
+            <ion-label position="stacked">Department</ion-label>
+            <ion-input [(ngModel)]="editingStudent.department" placeholder="Enter department"></ion-input>
+          </ion-item>
+
+          <ion-item lines="none" class="premium-input-item">
+            <ion-label position="stacked">Batch</ion-label>
+            <ion-input [(ngModel)]="editingStudent.batch" placeholder="e.g. 2021-2025"></ion-input>
+          </ion-item>
+
+          <ion-item lines="none" class="premium-input-item">
+            <ion-label position="stacked">Mobile Number</ion-label>
+            <ion-input [(ngModel)]="editingStudent.mobile" placeholder="Enter mobile"></ion-input>
+          </ion-item>
+
+          <div class="form-actions-v2">
+            <ion-button expand="block" (click)="updateStudent()" class="btn-save">
+              Save Changes
+            </ion-button>
+            <ion-button expand="block" fill="clear" color="medium" (click)="cancelEdit()">
+              Cancel
+            </ion-button>
+          </div>
+        </div>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+
+</ion-content>

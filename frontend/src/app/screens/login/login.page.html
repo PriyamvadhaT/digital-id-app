@@ -1,0 +1,79 @@
+<ion-content class="page-bg">
+
+  <div class="login-wrapper mobile-container">
+    <div class="login-decor"></div>
+    
+    <div class="login-card shadow-deep">
+      <!-- Premium Branding Header -->
+      <div class="login-header">
+        <div class="logo-ring">
+          <ion-icon name="school-outline"></ion-icon>
+        </div>
+        <h1 class="brand-title">Digital ID</h1>
+        <p class="brand-subtitle">Secure Academic Credentials Access</p>
+      </div>
+
+      <!-- Role Selection -->
+      <div class="platform-selector">
+        <ion-segment [(ngModel)]="selectedRole" mode="ios">
+          <ion-segment-button value="user">
+            <ion-label>User Portal</ion-label>
+          </ion-segment-button>
+          <ion-segment-button value="admin">
+            <ion-label>Admin Console</ion-label>
+          </ion-segment-button>
+        </ion-segment>
+      </div>
+
+      <!-- Authentication Form -->
+      <div class="form-section">
+        <div class="input-group">
+          <ion-item lines="none" class="modern-input">
+            <ion-icon name="person-outline" slot="start"></ion-icon>
+            <ion-input
+              placeholder="Username or Email"
+              [(ngModel)]="username">
+            </ion-input>
+          </ion-item>
+
+          <ion-item lines="none" class="modern-input">
+            <ion-icon name="lock-closed-outline" slot="start"></ion-icon>
+            <ion-input
+              [type]="showPassword ? 'text' : 'password'"
+              placeholder="Password"
+              [(ngModel)]="password">
+            </ion-input>
+            <ion-icon
+              slot="end"
+              class="eye-icon"
+              [name]="showPassword ? 'eye-off-outline' : 'eye-outline'"
+              (click)="togglePassword()">
+            </ion-icon>
+          </ion-item>
+        </div>
+
+        <div class="action-stack">
+          <ion-button expand="block" mode="ios" class="primary-login-btn" (click)="login()">
+            Sign In to Account
+          </ion-button>
+
+          <ion-button 
+            *ngIf="selectedRole === 'admin'"
+            expand="block" 
+            fill="clear"
+            size="small"
+            class="secondary-reg-btn"
+            (click)="goToRegister()">
+            Register New Administrator
+          </ion-button>
+        </div>
+
+        <p class="security-note">
+          <ion-icon name="shield-checkmark-outline"></ion-icon>
+          End-to-End Encrypted Authentication
+        </p>
+      </div>
+    </div>
+  </div>
+
+</ion-content>

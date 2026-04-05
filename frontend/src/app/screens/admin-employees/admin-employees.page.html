@@ -1,0 +1,162 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar class="premium-header">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/admin-dashboard" [icon]="'chevron-back-outline'"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Employee Directory</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="isSortModalOpen = true">
+        <ion-icon name="filter-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+
+  <ion-toolbar class="search-toolbar">
+    <ion-searchbar 
+      [(ngModel)]="searchText" 
+      placeholder="Search employees..." 
+      class="custom-search"
+      animated="true">
+    </ion-searchbar>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="dashboard-bg">
+
+  <!-- EMPLOYEE LIST -->
+  <div class="employee-list-container">
+    <div class="employee-card" *ngFor="let employee of filteredEmployees()" [class.inactive-card]="!employee.isActive">
+      
+      <div class="card-status-strip" [class.active]="employee.isActive"></div>
+
+      <div class="card-content">
+        <div class="card-top">
+          <div class="user-avatar-box">
+            <div class="avatar-circle">
+              <ion-icon name="person-circle-outline"></ion-icon>
+            </div>
+            <div class="status-indicator" [class.active]="employee.isActive"></div>
+          </div>
+          
+          <div class="user-main-info">
+            <h3>{{ employee.name }}</h3>
+            <span class="user-id">#{{ employee.id }}</span>
+          </div>
+
+          <div class="role-badge">Employee</div>
+        </div>
+
+        <div class="card-details">
+          <div class="detail-pill">
+            <ion-icon name="briefcase-outline"></ion-icon>
+            <span>{{ getDeptCode(employee.department) }}</span>
+          </div>
+        </div>
+
+        <div class="card-actions-v2">
+          <ion-button fill="clear" class="btn-edit" (click)="editEmployee(employee)">
+            <ion-icon name="create-outline"></ion-icon>
+          </ion-button>
+
+          <ion-button fill="clear" [class.btn-power-off]="employee.isActive" [class.btn-power-on]="!employee.isActive" (click)="toggleStatus(employee)">
+            <ion-icon name="power-outline"></ion-icon>
+          </ion-button>
+
+          <ion-button fill="clear" class="btn-delete" (click)="deleteEmployee(employee._id)">
+            <ion-icon name="trash-outline"></ion-icon>
+          </ion-button>
+        </div>
+      </div>
+    </div>
+
+    <!-- EMPTY STATE -->
+    <div class="empty-state" *ngIf="filteredEmployees().length === 0">
+      <div class="empty-icon-box">
+        <ion-icon name="search-outline"></ion-icon>
+      </div>
+      <h4>No employees found</h4>
+      <p>Try adjusting your search or filters</p>
+    </div>
+  </div>
+
+
+  <!-- SORT MODAL -->
+  <ion-modal [isOpen]="isSortModalOpen" (didDismiss)="isSortModalOpen = false" [initialBreakpoint]="0.35" [breakpoints]="[0, 0.35, 0.5]" class="bottom-sheet-modal">
+    <ng-template>
+      <ion-header class="ion-no-border">
+        <ion-toolbar>
+          <ion-title>Sort & Filter</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="isSortModalOpen = false">Done</ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content class="ion-padding">
+        <div class="filter-group">
+          <ion-label class="group-label">Sort By</ion-label>
+          
+          <ion-item lines="none" class="filter-item">
+            <ion-label>Name</ion-label>
+            <ion-checkbox slot="end" [(ngModel)]="sortName"></ion-checkbox>
+          </ion-item>
+
+          <ion-item lines="none" class="filter-item">
+            <ion-label>Employee ID</ion-label>
+            <ion-checkbox slot="end" [(ngModel)]="sortId"></ion-checkbox>
+          </ion-item>
+
+          <ion-item lines="none" class="filter-item">
+            <ion-label>Department</ion-label>
+            <ion-checkbox slot="end" [(ngModel)]="sortDepartment"></ion-checkbox>
+          </ion-item>
+        </div>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+
+
+  <!-- EDIT MODAL -->
+  <ion-modal [isOpen]="!!editingEmployee" (didDismiss)="cancelEdit()" class="edit-modal-premium">
+    <ng-template>
+      <ion-header class="ion-no-border">
+        <ion-toolbar class="premium-header">
+          <ion-title>Edit Employee</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="cancelEdit()">
+              <ion-icon name="close-outline"></ion-icon>
+            </ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+
+      <ion-content class="ion-padding dashboard-bg">
+        <div class="edit-form-card" *ngIf="editingEmployee">
+          <ion-item lines="none" class="premium-input-item">
+            <ion-label position="stacked">Full Name</ion-label>
+            <ion-input [(ngModel)]="editingEmployee.name" placeholder="Enter name"></ion-input>
+          </ion-item>
+
+          <ion-item lines="none" class="premium-input-item">
+            <ion-label position="stacked">Department</ion-label>
+            <ion-input [(ngModel)]="editingEmployee.department" placeholder="Enter department"></ion-input>
+          </ion-item>
+
+          <ion-item lines="none" class="premium-input-item">
+            <ion-label position="stacked">Mobile Number</ion-label>
+            <ion-input [(ngModel)]="editingEmployee.mobile" placeholder="Enter mobile"></ion-input>
+          </ion-item>
+
+          <div class="form-actions-v2">
+            <ion-button expand="block" (click)="updateEmployee()" class="btn-save">
+              Save Changes
+            </ion-button>
+            <ion-button expand="block" fill="clear" color="medium" (click)="cancelEdit()">
+              Cancel
+            </ion-button>
+          </div>
+        </div>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+
+</ion-content>
