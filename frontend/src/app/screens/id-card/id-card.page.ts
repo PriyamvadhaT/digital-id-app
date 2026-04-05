@@ -85,7 +85,7 @@ export class IdCardPage {
       this.profile = this.decodeToken(savedToken);
       if (this.profile) {
         this.role = this.profile.role;
-        this.generateQR();
+        this.qrValue = savedToken; // ✅ Set QR immediately from cached token
         // We still continue to fetch online to sync latest data
       }
     }
@@ -103,12 +103,12 @@ export class IdCardPage {
           }
 
           localStorage.setItem('offlineIdToken', res.idToken);
+          this.qrValue = res.idToken; // ✅ Set QR directly from server token
           const newProfile = this.decodeToken(res.idToken);
           
           if (newProfile) {
             this.profile = newProfile;
             this.role = this.profile.role;
-            this.generateQR();
           } else if (!this.profile) {
             this.errorMessage = 'Failed to process Digital ID payload.';
           }
@@ -148,8 +148,10 @@ export class IdCardPage {
   }
 
   generateQR() {
-    if (!this.profile) return;
-    this.qrValue = localStorage.getItem('offlineIdToken') || '';
+    // qrValue is now set directly when token is received — no-op kept for safety
+    if (!this.qrValue) {
+      this.qrValue = localStorage.getItem('offlineIdToken') || '';
+    }
   }
 
 }

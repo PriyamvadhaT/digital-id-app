@@ -93,7 +93,7 @@
       </div>
 
       <!-- Authenticator QR -->
-      <div class="qr-verify-section">
+      <div class="qr-verify-section" *ngIf="qrValue">
         <div class="qr-container">
           <qrcode
             [qrdata]="qrValue"
@@ -107,6 +107,9 @@
           </div>
         </div>
         <p class="verify-instruction">SCAN TO VERIFY IDENTITY</p>
+      </div>
+      <div class="qr-verify-section" *ngIf="!qrValue">
+        <p class="verify-instruction" style="color:#94a3b8;">Syncing QR Code...</p>
       </div>
 
       <!-- Branding / Footer -->
