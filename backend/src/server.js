@@ -1,17 +1,16 @@
 const express = require('express');
 const dotenv = require('dotenv');
+dotenv.config();
 const cors = require('cors');
 const connectDB = require('./config/db');
-
-dotenv.config();
 connectDB();
 
 const app = express();
 
 // 🛡️ SECURITY: Configure CORS for production
 const allowedOrigins = [
-  'http://localhost:8100', // Development
-  'https://digital-id-app.onrender.com', // Production
+  'http://localhost:8100',
+  'https://digital-id-app.onrender.com',
   'https://digital-id-app-beta.vercel.app'
 ];
 

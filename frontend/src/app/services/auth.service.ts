@@ -7,11 +7,11 @@ export class AuthService {
 
   private apiUrl = environment.apiUrl;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   login(username: string, password: string) {
 
-    return this.http.post<any>(`${this.apiUrl}/auth/login`, {
+    return this.http.post<any>(`${this.apiUrl}/api/auth/login`, {
       username,
       password
     });
