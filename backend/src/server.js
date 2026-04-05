@@ -11,7 +11,7 @@ const app = express();
 // 🛡️ SECURITY: Configure CORS for production
 const allowedOrigins = [
   'http://localhost:8100', // Development
-  'https://your-production-app-url.com' // Production placeholder
+  'https://digital-id-app.onrender.com' // Production
 ];
 
 app.use(cors({
