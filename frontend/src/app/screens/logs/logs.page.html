@@ -86,10 +86,10 @@
         
         <div class="entry-main">
           <div class="subject-info">
-            <div class="subject-avatar">{{ log.scannedName?.charAt(0) }}</div>
+            <div class="subject-avatar">{{ (log.scannedName || 'U')?.charAt(0) }}</div>
             <div class="subject-details">
-              <h4>{{ log.scannedName }}</h4>
-              <span class="id-badge">ID: {{ log.scannedId }}</span>
+              <h4>{{ log.scannedName || 'Unknown User' }}</h4>
+              <span class="id-badge">ID: {{ log.scannedId || 'N/A' }}</span>
             </div>
           </div>
           

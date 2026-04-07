@@ -477,14 +477,38 @@ exports.getLogs = async (req, res) => {
 
     const logs = await VerificationLog.find(filter)
       .sort({ date: -1 })
-      .populate('scannedBy', 'username role')
       .populate({
         path: 'scannedBy',
-        select: 'username role',
+        select: 'username role'
+      })
+      .populate({
+        path: 'scannedUser',
+        select: 'username role profileId',
         populate: { path: 'profileId' }
       });
 
-    res.json(logs);
+    // 🔄 Map through logs to provide fallbacks for older entries
+    const optimizedLogs = logs.map(log => {
+      const logObj = log.toObject();
+
+      // Fallback if missing (for legacy logs)
+      if (!logObj.scannedName && logObj.scannedUser?.profileId?.name) {
+        logObj.scannedName = logObj.scannedUser.profileId.name;
+      }
+      if (!logObj.scannedId && logObj.scannedUser?.profileId?.id) {
+        logObj.scannedId = logObj.scannedUser.profileId.id;
+      }
+      
+      // Secondary fallback for invalid scans
+      if (!logObj.scannedName && logObj.result === 'INVALID') {
+        logObj.scannedName = 'Unknown User';
+        logObj.scannedId = 'N/A';
+      }
+
+      return logObj;
+    });
+
+    res.json(optimizedLogs);
 
   } catch (err) {
     res.status(500).json({ message: err.message });
