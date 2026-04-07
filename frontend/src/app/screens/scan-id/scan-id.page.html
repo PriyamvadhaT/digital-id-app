@@ -19,6 +19,7 @@
       </div>
       
       <zxing-scanner
+        [autostart]="true"
         (scanSuccess)="onCodeResult($event)"
         [formats]="allowedFormats">
       </zxing-scanner>
