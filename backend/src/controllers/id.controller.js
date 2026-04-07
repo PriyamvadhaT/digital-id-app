@@ -280,17 +280,8 @@ exports.getMyId = async (req, res) => {
       process.env.JWT_SECRET
     );
 
-    // Lightweight token for QR code (no photo — QR codes can only hold ~3KB)
-    const qrToken = jwt.sign(
-      {
-        userId: user._id.toString(),
-        name: profileObj.name,
-        id: profileObj.id,
-        department: profileObj.department,
-        role: user.role
-      },
-      process.env.JWT_SECRET
-    );
+    // Lightweight token for QR code - Short ID for instant scanning clarity
+    const qrToken = `V1:${user._id}`;
 
     res.json({
       idToken,
@@ -347,10 +338,19 @@ exports.verifyQr = async (req, res) => {
 
     const scanner = req.user; // from auth middleware
  
-    // 🛡️ Verify JWT Token
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    let decoded = null;
+    let userId = null;
+
+    if (token.startsWith('V1:')) {
+      // 🛡️ Simple ID format (Fast scan)
+      userId = token.split(':')[1];
+    } else {
+      // 🛡️ Verify JWT Token (Legacy fallback)
+      decoded = jwt.verify(token, process.env.JWT_SECRET);
+      userId = decoded.userId;
+    }
  
-    const user = await User.findById(decoded.userId);
+    const user = await User.findById(userId);
 
     if (!user) {
       await VerificationLog.create({
