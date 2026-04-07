@@ -13,7 +13,7 @@
         
         <ion-item class="custom-item">
           <ion-label position="stacked">User Category</ion-label>
-          <ion-select [(ngModel)]="role" (ionChange)="generatePreview()" interface="action-sheet">
+          <ion-select [(ngModel)]="role" (ionChange)="generatePreview()" interface="popover">
             <ion-select-option value="Student">Student</ion-select-option>
             <ion-select-option value="Employee">Employee</ion-select-option>
           </ion-select>
@@ -30,7 +30,7 @@
 
         <ion-item class="custom-item">
           <ion-label position="stacked">Academic/Staff Department</ion-label>
-          <ion-select [(ngModel)]="form.department" (ionChange)="generatePreview()" interface="action-sheet">
+          <ion-select [(ngModel)]="form.department" (ionChange)="generatePreview()" interface="popover">
             <ion-select-option value="Computer Science and Engineering">Computer Science</ion-select-option>
             <ion-select-option value="Electronics and Communication Engineering">Electronics & Communication</ion-select-option>
             <ion-select-option value="Mechanical Engineering">Mechanical Engineering</ion-select-option>
