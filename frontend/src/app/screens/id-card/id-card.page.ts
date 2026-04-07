@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
 import { environment } from '../../../environments/environment';
 import { CommonModule } from '@angular/common';
 
@@ -54,7 +55,8 @@ export class IdCardPage {
 
   constructor(
     private http: HttpClient,
-    private router: Router
+    private router: Router,
+    private auth: AuthService
   ) {
     addIcons({ 
       shieldCheckmarkOutline, 
@@ -72,6 +74,13 @@ export class IdCardPage {
     const token = localStorage.getItem('token');
     if (!token) {
       this.router.navigate(['/login']);
+      return;
+    }
+
+    // 🔒 Safety Check: Expiry check for offline users
+    if (!navigator.onLine && !this.auth.isCheckinValid()) {
+      this.errorMessage = 'Security Check Required: Please connect to the internet to verify your ID status.';
+      this.isLoading = false;
       return;
     }
 

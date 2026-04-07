@@ -16,6 +16,14 @@ export class AuthGuard implements CanActivate {
 
     const loggedIn = this.auth.isLoggedIn();
     const userRole = this.auth.getRole()?.toLowerCase(); // admin, student, employee
+    const isOnline = navigator.onLine;
+
+    // 🔒 Safety Check: If offline and last check-in was > 24 hours ago, block access
+    if (!isOnline && !this.auth.isCheckinValid()) {
+      alert('Security Check Required: Please connect to the internet to verify your ID status.');
+      this.router.navigate(['/login'], { replaceUrl: true });
+      return false;
+    }
 
     if (!loggedIn) {
       this.router.navigate(['/login'], { replaceUrl: true });

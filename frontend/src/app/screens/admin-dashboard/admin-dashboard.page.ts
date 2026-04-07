@@ -84,6 +84,7 @@ export class AdminDashboardPage {
         
         // 🟢 Cache for offline use
         localStorage.setItem('offline_admin_stats', JSON.stringify(data));
+        this.auth.updateLastCheckin();
       },
       error: (err) => {
         console.error('Error fetching stats:', err);

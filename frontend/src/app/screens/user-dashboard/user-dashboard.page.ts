@@ -82,6 +82,7 @@ export class UserDashboardPage {
         this.profile = res.profile;
         // 🟢 Cache for offline use
         localStorage.setItem('offline_profile', JSON.stringify(res.profile));
+        this.auth.updateLastCheckin();
       },
       error: (err) => {
         console.log("Profile load failed:", err);

@@ -19,12 +19,25 @@ export class AuthService {
   }
 
   saveSession(token: string, role: string, userId: string) {
-
     localStorage.setItem('token', token);
     localStorage.setItem('role', role);
     localStorage.setItem('userId', userId);
     localStorage.setItem('loggedIn', 'true');
+    this.updateLastCheckin(); // Initial check-in on login
+  }
 
+  updateLastCheckin() {
+    localStorage.setItem('last_checkin', Date.now().toString());
+  }
+
+  isCheckinValid(): boolean {
+    const lastCheckin = localStorage.getItem('last_checkin');
+    if (!lastCheckin) return false;
+
+    const twentyFourHours = 24 * 60 * 60 * 1000;
+    const timePassed = Date.now() - parseInt(lastCheckin);
+    
+    return timePassed < twentyFourHours;
   }
 
   logout() {
@@ -38,5 +51,4 @@ export class AuthService {
   getRole(): string | null {
     return localStorage.getItem('role');
   }
-
 }
