@@ -31,15 +31,19 @@ export class AuthGuard implements CanActivate {
         ? expectedRole.includes(userRole) 
         : userRole === expectedRole;
 
-      if (!hasRole) {
-        // Unauthorized Role → go to their respective dashboard
-        if (userRole === 'admin') {
-          this.router.navigate(['/admin-dashboard'], { replaceUrl: true });
-        } else {
-          this.router.navigate(['/user-dashboard'], { replaceUrl: true });
+        if (!hasRole) {
+          const currentUrl = this.router.url;
+          const targetDashboard = (userRole === 'admin') ? '/admin-dashboard' : '/user-dashboard';
+
+          if (currentUrl !== targetDashboard) {
+            this.router.navigate([targetDashboard], { replaceUrl: true });
+          } else {
+            // If already on the target but role still mismatched, fallback to login
+            this.auth.logout();
+            this.router.navigate(['/login'], { replaceUrl: true });
+          }
+          return false;
         }
-        return false;
-      }
     }
 
     return true;
