@@ -34,10 +34,10 @@ export class AuthService {
     const lastCheckin = localStorage.getItem('last_checkin');
     if (!lastCheckin) return false;
 
-    const twentyFourHours = 24 * 60 * 60 * 1000;
+    const twelveHours = 12 * 60 * 60 * 1000;
     const timePassed = Date.now() - parseInt(lastCheckin);
     
-    return timePassed < twentyFourHours;
+    return timePassed < twelveHours;
   }
 
   logout() {
