@@ -63,6 +63,15 @@ export class AdminDashboardPage {
   }
 
   loadStats() {
+    // 🟠 Offline Support: Load from cache first
+    const cachedStats = localStorage.getItem('offline_admin_stats');
+    if (cachedStats) {
+      const data = JSON.parse(cachedStats);
+      this.studentCount = data.students || 0;
+      this.employeeCount = data.employees || 0;
+      this.scanCount = data.scans || 0;
+    }
+
     this.http.get<any>(`${environment.apiUrl}/id/get-stats`, {
       headers: {
         Authorization: 'Bearer ' + localStorage.getItem('token')
@@ -72,8 +81,18 @@ export class AdminDashboardPage {
         this.studentCount = data.students || 0;
         this.employeeCount = data.employees || 0;
         this.scanCount = data.scans || 0;
+        
+        // 🟢 Cache for offline use
+        localStorage.setItem('offline_admin_stats', JSON.stringify(data));
       },
-      error: (err) => console.error('Error fetching stats:', err)
+      error: (err) => {
+        console.error('Error fetching stats:', err);
+        // Do NOT logout on network errors (status 0)
+        if (err.status === 401 || err.status === 403) {
+          this.auth.logout();
+          this.router.navigate(['/login']);
+        }
+      }
     });
   }
 

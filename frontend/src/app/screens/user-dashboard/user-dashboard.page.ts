@@ -61,8 +61,13 @@ export class UserDashboardPage {
   }
 
   loadProfile() {
-
     const token = localStorage.getItem('token');
+    
+    // 🟠 Offline Support: Load from cache first
+    const cachedProfile = localStorage.getItem('offline_profile');
+    if (cachedProfile) {
+      this.profile = JSON.parse(cachedProfile);
+    }
 
     if (!token) {
       this.router.navigate(['/login'], { replaceUrl: true });
@@ -70,29 +75,24 @@ export class UserDashboardPage {
     }
 
     this.http.get<any>(`${environment.apiUrl}/auth/me`, {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
+      headers: { Authorization: `Bearer ${token}` }
     }).subscribe({
-
       next: (res) => {
-
         this.role = res.role;
         this.profile = res.profile;
-
+        // 🟢 Cache for offline use
+        localStorage.setItem('offline_profile', JSON.stringify(res.profile));
       },
-
       error: (err) => {
-
-        console.log("Session error:", err);
-
-        this.auth.logout();
-        this.router.navigate(['/login'], { replaceUrl: true });
-
+        console.log("Profile load failed:", err);
+        // 🔴 ONLY logout if session is strictly expired (401/403)
+        // Network errors (0) are ignored so user stays in for offline access
+        if (err.status === 401 || err.status === 403) {
+          this.auth.logout();
+          this.router.navigate(['/login'], { replaceUrl: true });
+        }
       }
-
     });
-
   }
 
   goToIdCard() {
