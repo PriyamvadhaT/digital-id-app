@@ -18,7 +18,8 @@ import {
   checkmark,
   close,
   closeCircle,
-  flashOutline
+  flashOutline,
+  ribbonOutline
 } from 'ionicons/icons';
 
 @Component({
@@ -41,6 +42,7 @@ export class ScanIdPage {
   scanned = false;
   role: string = '';
   allowedFormats = [ BarcodeFormat.QR_CODE ];
+  dismissTimer: any;
 
   constructor(private http: HttpClient) {
 
@@ -51,7 +53,8 @@ export class ScanIdPage {
       checkmark,
       close,
       closeCircle,
-      flashOutline
+      flashOutline,
+      ribbonOutline
     });
 
   }
@@ -70,10 +73,9 @@ export class ScanIdPage {
   }
 
   onCodeResult(result: string) {
-
     if (this.scanned) return;
-
     this.scanned = true;
+    if (this.dismissTimer) clearTimeout(this.dismissTimer);
 
     const token = localStorage.getItem('token');
     const scannerRole = localStorage.getItem('role');
@@ -81,51 +83,36 @@ export class ScanIdPage {
     this.http.post(`${environment.apiUrl}/id/verify-qr`, {
       token: result
     }, {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
+      headers: { Authorization: `Bearer ${token}` }
     }).subscribe({
-
       next: (res: any) => {
-
-        // 🚨 EMPLOYEE RESTRICTION
         if (scannerRole === 'Employee' && res.role !== 'Student') {
-
-          this.verification = "❌ NOT ALLOWED (ONLY STUDENTS)";
-          this.scanResult = null;
-
-          this.resetScanner();
+          this.verification = "NOT ALLOWED";
+          this.scanResult = { name: 'Restricted Access', id: 'N/A' };
+          this.startAutoDismiss();
           return;
         }
 
-        // ✅ ADMIN → NO RESTRICTION
-
         this.scanResult = res;
-
-        if (res.valid) {
-          this.verification = "VALID";
-        } else {
-          this.verification = res.message || "INVALID";
-        }
-
-        this.resetScanner();
+        this.verification = res.valid ? "VALID" : (res.message || "INVALID");
+        this.startAutoDismiss();
       },
-
       error: () => {
-        this.verification = "VERIFICATION FAILED";
-        this.resetScanner();
+        this.verification = "FAILED";
+        this.scanResult = { name: 'Network Error', id: 'ERR' };
+        this.startAutoDismiss();
       }
-
     });
-
   }
 
-  resetScanner() {
-    // Only reset scan lock so scanner can detect again after user dismisses the result
-    // The result stays on screen until the user clicks "Scan Another"
+  startAutoDismiss() {
+    this.dismissTimer = setTimeout(() => {
+      this.dismissResult();
+    }, 3500); 
   }
 
   dismissResult() {
+    if (this.dismissTimer) clearTimeout(this.dismissTimer);
     this.scanResult = null;
     this.verification = '';
     this.scanned = false;
