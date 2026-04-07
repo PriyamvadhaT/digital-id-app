@@ -68,6 +68,15 @@
           </select>
         </div>
 
+        <div class="select-wrap">
+          <ion-icon name="person-circle-outline"></ion-icon>
+          <select [(ngModel)]="verifierRoleFilter">
+            <option value="">All Verifiers</option>
+            <option value="Admin">Admin (Me)</option>
+            <option value="Employee">Staff (Employees)</option>
+          </select>
+        </div>
+
         <button class="apply-filters-btn" (click)="loadLogs()">
           Update
         </button>

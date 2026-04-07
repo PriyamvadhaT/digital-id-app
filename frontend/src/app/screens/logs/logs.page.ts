@@ -45,6 +45,7 @@ export class LogsPage {
   fromDate = '';
   toDate = '';
   resultFilter = '';
+  verifierRoleFilter = '';
   searchText = '';
 
   constructor(private http: HttpClient) {
@@ -84,7 +85,11 @@ export class LogsPage {
     }
 
     if (this.resultFilter) {
-      url += `result=${this.resultFilter}`;
+      url += `result=${this.resultFilter}&`;
+    }
+
+    if (this.verifierRoleFilter) {
+      url += `verifierRole=${this.verifierRoleFilter}`;
     }
 
     this.http.get<any[]>(url, {

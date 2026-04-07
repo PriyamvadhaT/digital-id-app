@@ -438,7 +438,7 @@ exports.verifyQr = async (req, res) => {
 /* ===================== GET SCOPED LOGS (ADMIN/EMPLOYEE) ===================== */
 exports.getLogs = async (req, res) => {
   try {
-    const { from, to, result } = req.query;
+    const { from, to, result, verifierRole } = req.query;
     const currentUser = req.user;
 
     let filter = {};
@@ -473,6 +473,11 @@ exports.getLogs = async (req, res) => {
     // 🔎 Result Filter
     if (result) {
       filter.result = result;
+    }
+
+    // 🔦 Verifier Role Filter (Admin vs Staff)
+    if (verifierRole) {
+      filter.scannedBy = { $in: await getManagedVerifierIds(currentUser, verifierRole) };
     }
 
     const logs = await VerificationLog.find(filter)
@@ -534,3 +539,15 @@ exports.getStats = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+
+/* ===================== HELPERS ===================== */
+async function getManagedVerifierIds(currentUser, role) {
+  if (role === 'Admin') {
+    return [currentUser._id];
+  } else if (role === 'Employee') {
+    // Return all employees managed by this admin
+    const employees = await User.find({ adminId: currentUser._id, role: 'Employee' }).select('_id');
+    return employees.map(e => e._id);
+  }
+  return [];
+}
