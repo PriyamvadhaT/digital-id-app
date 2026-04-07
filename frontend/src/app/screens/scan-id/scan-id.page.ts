@@ -75,7 +75,6 @@ export class ScanIdPage {
   onCodeResult(result: string) {
     if (this.scanned) return;
     this.scanned = true;
-    if (this.dismissTimer) clearTimeout(this.dismissTimer);
 
     const token = localStorage.getItem('token');
     const scannerRole = localStorage.getItem('role');
@@ -89,30 +88,20 @@ export class ScanIdPage {
         if (scannerRole === 'Employee' && res.role !== 'Student') {
           this.verification = "NOT ALLOWED";
           this.scanResult = { name: 'Restricted Access', id: 'N/A' };
-          this.startAutoDismiss();
           return;
         }
 
         this.scanResult = res;
         this.verification = res.valid ? "VALID" : (res.message || "INVALID");
-        this.startAutoDismiss();
       },
       error: () => {
         this.verification = "FAILED";
         this.scanResult = { name: 'Network Error', id: 'ERR' };
-        this.startAutoDismiss();
       }
     });
   }
 
-  startAutoDismiss() {
-    this.dismissTimer = setTimeout(() => {
-      this.dismissResult();
-    }, 3500); 
-  }
-
   dismissResult() {
-    if (this.dismissTimer) clearTimeout(this.dismissTimer);
     this.scanResult = null;
     this.verification = '';
     this.scanned = false;
