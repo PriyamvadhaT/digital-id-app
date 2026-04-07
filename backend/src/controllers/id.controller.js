@@ -376,6 +376,7 @@ exports.verifyQr = async (req, res) => {
         scannedBy: scanner._id,
         scannedUser: user._id,
         scannedName: profile?.name,
+        scannedId: profile?.id,
         scannedRole: user.role,
         result: 'NOT ALLOWED'
       });
@@ -393,6 +394,7 @@ exports.verifyQr = async (req, res) => {
         scannedBy: scanner._id,
         scannedUser: user._id,
         scannedName: profile?.name,
+        scannedId: profile?.id,
         scannedRole: user.role,
         result: 'INVALID'
       });
@@ -408,6 +410,7 @@ exports.verifyQr = async (req, res) => {
       scannedBy: scanner._id,
       scannedUser: user._id,
       scannedName: profile?.name,
+      scannedId: profile?.id,
       scannedRole: user.role,
       result: 'VALID'
     });
@@ -429,6 +432,62 @@ exports.verifyQr = async (req, res) => {
     });
 
     res.json({ valid: false, message: 'Invalid QR' });
+  }
+};
+
+/* ===================== GET SCOPED LOGS (ADMIN/EMPLOYEE) ===================== */
+exports.getLogs = async (req, res) => {
+  try {
+    const { from, to, result } = req.query;
+    const currentUser = req.user;
+
+    let filter = {};
+
+    if (currentUser.role === 'Admin') {
+      // 🛡️ ADMIN: See all logs for students/employees created by THIS admin
+      const managedUsers = await User.find({ adminId: currentUser._id }).select('_id');
+      const managedIds = managedUsers.map(u => u._id);
+      
+      // Include the admin's own ID as a potential scanner
+      managedIds.push(currentUser._id);
+
+      filter = {
+        $or: [
+          { scannedBy: { $in: managedIds } },
+          { scannedUser: { $in: managedIds } }
+        ]
+      };
+    } else {
+      // 🛡️ EMPLOYEE: See only logs they performed
+      filter = { scannedBy: currentUser._id };
+    }
+
+    // 📅 Date Filter
+    if (from && to) {
+      filter.date = {
+        $gte: new Date(from),
+        $lte: new Date(to)
+      };
+    }
+
+    // 🔎 Result Filter
+    if (result) {
+      filter.result = result;
+    }
+
+    const logs = await VerificationLog.find(filter)
+      .sort({ date: -1 })
+      .populate('scannedBy', 'username role')
+      .populate({
+        path: 'scannedBy',
+        select: 'username role',
+        populate: { path: 'profileId' }
+      });
+
+    res.json(logs);
+
+  } catch (err) {
+    res.status(500).json({ message: err.message });
   }
 };
 

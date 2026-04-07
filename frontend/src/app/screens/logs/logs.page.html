@@ -82,29 +82,33 @@
       </div>
 
       <div *ngFor="let log of filteredLogs()" class="audit-entry shadow-soft">
-        <div class="entry-line"></div>
+        <div class="entry-line" [ngClass]="log.result.toLowerCase().replace(' ', '')"></div>
         
-        <div class="entry-header">
-          <div class="user-profile">
-            <div class="user-avatar-mini">{{ log.name?.charAt(0) }}</div>
-            <div class="user-meta">
-              <h4>{{ log.name }}</h4>
-              <span>{{ log.userId }}</span>
+        <div class="entry-main">
+          <div class="subject-info">
+            <div class="subject-avatar">{{ log.scannedName?.charAt(0) }}</div>
+            <div class="subject-details">
+              <h4>{{ log.scannedName }}</h4>
+              <span class="id-badge">ID: {{ log.scannedId }}</span>
             </div>
           </div>
           
-          <div class="result-badge" [ngClass]="log.result.toLowerCase().replace(' ', '')">
-            {{ log.result }}
+          <div class="result-box">
+            <div class="result-badge" [ngClass]="log.result.toLowerCase().replace(' ', '')">
+              {{ log.result }}
+            </div>
+            <span class="timestamp">{{ log.date | date:'h:mm a' }}</span>
           </div>
         </div>
 
-        <div class="entry-footer">
-          <div class="timestamp">
-            <ion-icon name="time-outline"></ion-icon>
-            {{ log.date | date:'MMM d, h:mm a' }}
+        <div class="entry-meta">
+          <div class="verifier-info" *ngIf="log.scannedBy">
+            <ion-icon name="shield-checkmark-outline"></ion-icon>
+            <span>Verified by <strong>{{ log.scannedBy.role }}</strong>: {{ log.scannedBy.username }}</span>
           </div>
-          <div class="scanned-by" *ngIf="log.scannedBy">
-            Verified by: <strong>{{ log.scannedBy.username }}</strong>
+          <div class="date-info">
+            <ion-icon name="calendar-outline"></ion-icon>
+            {{ log.date | date:'MMM d, y' }}
           </div>
         </div>
       </div>

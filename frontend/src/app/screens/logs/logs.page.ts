@@ -101,11 +101,12 @@ export class LogsPage {
 
   filteredLogs() {
     return this.logs.filter(log => {
-
+      const search = this.searchText.toLowerCase();
       const matchesSearch =
         !this.searchText ||
-        log.name?.toLowerCase().includes(this.searchText.toLowerCase()) ||
-        log.userId?.toString().includes(this.searchText);
+        log.scannedName?.toLowerCase().includes(search) ||
+        log.scannedId?.toLowerCase().includes(search) ||
+        log.result?.toLowerCase().includes(search);
 
       return matchesSearch;
     });

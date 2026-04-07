@@ -26,41 +26,7 @@ router.post('/verify-qr', auth, controller.verifyQr);
 
 router.get('/my-id', auth, controller.getMyId);
 
-router.get('/logs', auth, async (req, res) => {
-  try {
-
-    const { from, to, result } = req.query;
-
-    let filter = {};
-
-    // 🧠 role based
-    if (req.user.role === 'Employee') {
-      filter.scannedBy = req.user._id;
-    }
-
-    // 📅 date filter
-    if (from && to) {
-      filter.date = {
-        $gte: new Date(from),
-        $lte: new Date(to)
-      };
-    }
-
-    // 🔎 result filter
-    if (result) {
-      filter.result = result;
-    }
-
-    const logs = await VerificationLog.find(filter)
-      .sort({ date: -1 })
-      .populate('scannedBy', 'username role');
-
-    res.json(logs);
-
-  } catch (err) {
-    res.status(500).json({ message: 'Error fetching logs' });
-  }
-});
+router.get('/logs', auth, controller.getLogs);
 
 router.get('/get-stats', auth, controller.getStats);
 module.exports = router;

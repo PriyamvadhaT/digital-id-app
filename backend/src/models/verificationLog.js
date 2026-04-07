@@ -12,6 +12,7 @@ const logSchema = new mongoose.Schema({
   },
 
   scannedName: String,
+  scannedId: String, // Custom ID (CSE001)
   scannedRole: String,
 
   result: String, // VALID / INVALID / NOT ALLOWED

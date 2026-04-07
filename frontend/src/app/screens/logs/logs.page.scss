@@ -151,58 +151,65 @@
   }
 }
 
-/* 📋 Audit Trail Timeline */
-.audit-trail {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
 .audit-entry {
-  background: white; border-radius: 20px; padding: 16px 20px; position: relative;
-  border-left: 4px solid #e2e8f0; transition: all 0.2s;
+  background: white; border-radius: 20px; padding: 18px; position: relative;
+  border-left: 5px solid #e2e8f0; transition: all 0.2s;
+  display: flex; flex-direction: column; gap: 14px;
 
-  &:hover { border-left-color: #6366f1; transform: translateX(4px); }
+  &.valid { border-left-color: #22c55e; }
+  &.invalid { border-left-color: #ef4444; }
+  &.notallowed { border-left-color: #f59e0b; }
 
-  .entry-header {
-    display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;
-  }
-
-  .user-profile {
-    display: flex; align-items: center; gap: 12px;
-    
-    .user-avatar-mini {
-      width: 32px; height: 32px; background: #f1f5f9; border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      font-weight: 800; font-size: 14px; color: #6366f1;
-    }
-
-    .user-meta {
-      h4 { margin: 0; font-size: 15px; font-weight: 700; color: #1e293b; }
-      span { font-size: 12px; color: #94a3b8; font-weight: 600; }
-    }
-  }
-
-  .result-badge {
-    font-size: 10px; font-weight: 800; padding: 4px 10px; border-radius: 8px; text-transform: uppercase;
-    
-    &.valid { background: #f0fdf4; color: #166534; }
-    &.invalid { background: #fef2f2; color: #991b1b; }
-    &.notallowed { background: #fffbeb; color: #92400e; }
-  }
-
-  .entry-footer {
+  .entry-main {
     display: flex; justify-content: space-between; align-items: center;
-    padding-top: 12px; border-top: 1px solid #f1f5f9;
 
-    .timestamp {
-      display: flex; align-items: center; gap: 6px; font-size: 12px; color: #64748b; font-weight: 500;
-      ion-icon { font-size: 14px; }
+    .subject-info {
+      display: flex; align-items: center; gap: 12px;
+      
+      .subject-avatar {
+        width: 40px; height: 40px; background: #f1f5f9; border-radius: 12px;
+        display: flex; align-items: center; justify-content: center;
+        font-weight: 800; font-size: 16px; color: #6366f1;
+      }
+
+      .subject-details {
+        h4 { margin: 0; font-size: 16px; font-weight: 700; color: #1e293b; letter-spacing: -0.3px; }
+        .id-badge { 
+          font-size: 10px; font-weight: 800; color: #6366f1; 
+          background: #eef2ff; padding: 2px 8px; border-radius: 6px;
+          text-transform: uppercase; margin-top: 2px; display: inline-block;
+        }
+      }
     }
 
-    .scanned-by {
-      font-size: 11px; color: #94a3b8;
-      strong { color: #64748b; }
+    .result-box {
+      text-align: right;
+      .result-badge {
+        font-size: 10px; font-weight: 800; padding: 4px 10px; border-radius: 8px; text-transform: uppercase;
+        display: inline-block; margin-bottom: 4px;
+        
+        &.valid { background: #f0fdf4; color: #166534; }
+        &.invalid { background: #fef2f2; color: #991b1b; }
+        &.notallowed { background: #fffbeb; color: #92400e; }
+      }
+      .timestamp { display: block; font-size: 11px; color: #94a3b8; font-weight: 600; }
+    }
+  }
+
+  .entry-meta {
+    display: flex; justify-content: space-between; align-items: center;
+    padding-top: 12px; border-top: 1px dashed #f1f5f9;
+    font-size: 11px; color: #64748b; font-weight: 500;
+
+    .verifier-info {
+      display: flex; align-items: center; gap: 6px;
+      ion-icon { color: #6366f1; font-size: 14px; }
+      strong { color: #1e293b; text-transform: capitalize; }
+    }
+
+    .date-info {
+      display: flex; align-items: center; gap: 4px;
+      color: #94a3b8;
     }
   }
 }
@@ -214,8 +221,10 @@
 }
 
 @media (max-width: 600px) {
-  .stats-grid { grid-template-columns: 1fr; }
+  .stats-grid { grid-template-columns: repeat(2, 1fr); 
+    .stat-card.total { grid-column: span 2; }
+  }
   .options-row { flex-direction: column; align-items: stretch; }
   .date-group { justify-content: center; }
-  .entry-footer { flex-direction: column; align-items: flex-start; gap: 4px; }
+  .entry-meta { flex-direction: column; align-items: flex-start; gap: 6px; }
 }
