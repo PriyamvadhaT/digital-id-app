@@ -194,26 +194,36 @@ export class IdCardPage {
         onclone: (clonedDoc) => {
           const card = clonedDoc.getElementById('id-card-to-export');
           if (card) {
-            // Remove 3D effects for flat capture
-            card.style.transform = 'none';
-            card.style.transition = 'none';
+            // 🛡️ PRESERVE FIDELITY: Keep shadows and layout
+            // Only stop animations to prevent blurred capture
             card.style.animation = 'none';
+            card.style.transition = 'none';
             
-            // Fix Ionic/Shadow DOM elements
+            // Fix Ionic Icons for Canvas capture (Shadow DOM workaround)
             const icons = card.querySelectorAll('ion-icon');
             icons.forEach(icon => {
               const name = icon.getAttribute('name');
               const span = clonedDoc.createElement('span');
-              span.innerHTML = name?.includes('shield') ? '🛡️' : '✓';
-              span.style.fontSize = '24px';
+              // Use high-quality symbols that render well in Canvas
+              if (name?.includes('shield')) {
+                span.innerHTML = '🛡️';
+                span.style.color = '#6366f1';
+              } else if (name?.includes('download')) {
+                span.innerHTML = '⬇️';
+              } else {
+                span.innerHTML = '✓';
+                span.style.color = '#22c55e';
+              }
+              span.style.fontSize = '20px';
+              span.style.display = 'inline-flex';
+              span.style.alignItems = 'center';
+              span.style.justifyContent = 'center';
               icon.parentNode?.replaceChild(span, icon);
             });
 
-            // Ensure card is properly sized for capture
-            card.style.width = '340px';
-            card.style.height = 'auto';
-            card.style.boxShadow = 'none';
-            card.style.border = '1px solid #e2e8f0';
+            // Maintain dimensions
+            card.style.width = '350px';
+            card.style.margin = '0 auto';
           }
         }
       });

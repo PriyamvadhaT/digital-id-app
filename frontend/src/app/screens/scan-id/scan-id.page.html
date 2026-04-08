@@ -41,8 +41,10 @@
         <!-- Status Header -->
         <div class="status-indicator-box">
           <div class="pulse-ring"></div>
-          <ion-icon [name]="scanResult.isActive ? 'shield-checkmark' : 'alert-circle'"></ion-icon>
-          <h2 class="status-text">{{ scanResult.isActive ? 'ACCESS GRANTED' : 'ACCESS DENIED' }}</h2>
+          <ion-icon [name]="scanResult.isActive === true ? 'shield-checkmark' : (scanResult.isActive === false ? 'alert-circle' : 'ban-outline')"></ion-icon>
+          <h2 class="status-text">
+            {{ scanResult.isActive === true ? 'ACCESS GRANTED' : (scanResult.isActive === false ? 'ACCESS DENIED' : 'RESTRICTED') }}
+          </h2>
         </div>
 
         <!-- Profile Block -->
@@ -78,9 +80,10 @@
             <span class="info-label">Account Status</span>
             <span class="info-value status-badge"
                   [class.badge-active]="scanResult.isActive === true"
-                  [class.badge-deactivated]="scanResult.isActive === false">
-              <ion-icon [name]="scanResult.isActive ? 'checkmark-circle' : 'close-circle'"></ion-icon>
-              {{ scanResult.isActive ? 'ACTIVE' : 'DEACTIVATED' }}
+                  [class.badge-deactivated]="scanResult.isActive === false"
+                  [class.badge-unknown]="scanResult.isActive === null || scanResult.isActive === undefined">
+              <ion-icon [name]="scanResult.isActive === true ? 'checkmark-circle' : (scanResult.isActive === false ? 'close-circle' : 'ban-outline')"></ion-icon>
+              {{ scanResult.isActive === true ? 'ACTIVE' : (scanResult.isActive === false ? 'DEACTIVATED' : 'RESTRICTED') }}
             </span>
           </div>
         </div>

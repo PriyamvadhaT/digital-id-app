@@ -91,7 +91,7 @@ export class ScanIdPage {
       next: (res: any) => {
         if (scannerRole === 'Employee' && res.role !== 'Student') {
           this.verification = "NOT ALLOWED";
-          this.scanResult = { name: 'Restricted Access', id: 'N/A' };
+          this.scanResult = { name: 'Restricted Access', id: 'N/A', isActive: null };
           return;
         }
 
