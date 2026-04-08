@@ -388,7 +388,7 @@ exports.verifyQr = async (req, res) => {
     }
 
     // ❌ inactive
-    if (!user.isActive) {
+    if (user.isActive === false) {
 
       await VerificationLog.create({
         scannedBy: scanner._id,

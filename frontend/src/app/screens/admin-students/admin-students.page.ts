@@ -200,8 +200,8 @@ export class AdminStudentsPage {
   updateStudent(){
 
     this.http.put(
-      `${this.baseUrl}/student/${this.editingStudent._id}`, this.getHeaders(),
-      this.editingStudent
+      `${this.baseUrl}/student/${this.editingStudent._id}`,
+      this.editingStudent, this.getHeaders()
     ).subscribe(()=>{
 
       alert("Student updated");

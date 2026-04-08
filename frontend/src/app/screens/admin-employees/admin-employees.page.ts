@@ -193,8 +193,8 @@ export class AdminEmployeesPage {
   updateEmployee(){
 
     this.http.put(
-      `${this.baseUrl}/employee/${this.editingEmployee._id}`, this.getHeaders(),
-      this.editingEmployee
+      `${this.baseUrl}/employee/${this.editingEmployee._id}`,
+      this.editingEmployee, this.getHeaders()
     ).subscribe(()=>{
 
       alert("Employee updated");
