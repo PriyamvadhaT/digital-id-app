@@ -4,8 +4,6 @@ import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { environment } from '../../../environments/environment';
 import { CommonModule } from '@angular/common';
-import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
 
 import {
   IonContent,
@@ -23,8 +21,7 @@ import {
   shieldCheckmarkOutline, 
   refreshOutline, 
   alertCircleOutline,
-  chevronBackOutline,
-  downloadOutline
+  chevronBackOutline
 } from 'ionicons/icons';
 
 import { QRCodeComponent } from 'angularx-qrcode';
@@ -65,8 +62,7 @@ export class IdCardPage {
       shieldCheckmarkOutline, 
       refreshOutline, 
       alertCircleOutline,
-      chevronBackOutline,
-      downloadOutline
+      chevronBackOutline
     });
   }
 
@@ -171,90 +167,6 @@ export class IdCardPage {
     }
   }
 
-  async downloadPDF() {
-    const data = document.getElementById('id-card-to-export');
-    if (!data) {
-      alert('ID Card content not found');
-      return;
-    }
 
-    this.isLoading = true;
-
-    try {
-      console.log('PDF Export: High-Fidelity Capture Start...');
-      await new Promise(resolve => setTimeout(resolve, 500)); 
-
-      const canvas = await html2canvas(data, {
-        scale: 2, // 🛡️ Balanced for quality and memory
-        useCORS: true,
-        allowTaint: false,
-        logging: false,
-        backgroundColor: '#f8fafc',
-        imageTimeout: 15000,
-        onclone: (clonedDoc) => {
-          const card = clonedDoc.getElementById('id-card-to-export');
-          if (card) {
-            // 🛡️ PRESERVE FIDELITY: Keep shadows and layout
-            // Only stop animations to prevent blurred capture
-            card.style.animation = 'none';
-            card.style.transition = 'none';
-            
-            // Fix Ionic Icons for Canvas capture (Shadow DOM workaround)
-            const icons = card.querySelectorAll('ion-icon');
-            icons.forEach(icon => {
-              const name = icon.getAttribute('name');
-              const span = clonedDoc.createElement('span');
-              // Use high-quality symbols that render well in Canvas
-              if (name?.includes('shield')) {
-                span.innerHTML = '🛡️';
-                span.style.color = '#6366f1';
-              } else if (name?.includes('download')) {
-                span.innerHTML = '⬇️';
-              } else {
-                span.innerHTML = '✓';
-                span.style.color = '#22c55e';
-              }
-              span.style.fontSize = '20px';
-              span.style.display = 'inline-flex';
-              span.style.alignItems = 'center';
-              span.style.justifyContent = 'center';
-              icon.parentNode?.replaceChild(span, icon);
-            });
-
-            // Maintain dimensions
-            card.style.width = '350px';
-            card.style.margin = '0 auto';
-          }
-        }
-      });
-
-      const imgData = canvas.toDataURL('image/png', 0.9);
-      
-      const pdf = new jsPDF('p', 'mm', 'a4');
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      
-      const imgWidth = 170; // Larger for high-fidelity look
-      const imgHeight = (canvas.height * imgWidth) / canvas.width;
-      const xPos = (pdfWidth - imgWidth) / 2;
-      const yPos = 20;
-
-      // 📄 Add the high-fidelity capture to PDF
-      pdf.addImage(imgData, 'PNG', xPos, yPos, imgWidth, imgHeight);
-      
-      // 📋 Minimalist Footer
-      pdf.setFontSize(8);
-      pdf.setTextColor(180);
-      pdf.text(`Official Digital ID - Generated on ${new Date().toLocaleDateString()}`, pdfWidth / 2, yPos + imgHeight + 10, { align: 'center' });
-
-      pdf.save(`DigitalID_${this.profile.name?.replace(/\s+/g, '_')}.pdf`);
-      console.log('PDF Export: Success');
-
-    } catch (error: any) {
-      console.error('High-Fidelity Export Error:', error);
-      alert('Failed to generate high-quality PDF. Please try again or ensure you are using a modern browser.');
-    } finally {
-      this.isLoading = false;
-    }
-  }
 
 }
