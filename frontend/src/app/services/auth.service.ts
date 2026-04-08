@@ -18,11 +18,17 @@ export class AuthService {
 
   }
 
-  saveSession(token: string, role: string, userId: string) {
+  saveSession(token: string, role: string, userId: string, username?: string, password?: string) {
     localStorage.setItem('token', token);
     localStorage.setItem('role', role);
     localStorage.setItem('userId', userId);
     localStorage.setItem('loggedIn', 'true');
+    
+    if (username && password) {
+      localStorage.setItem('offline_user', username.toLowerCase());
+      localStorage.setItem('offline_pass', btoa(password)); // Simple obfuscation for offline check
+    }
+
     this.updateLastCheckin(); // Initial check-in on login
   }
 
@@ -41,7 +47,27 @@ export class AuthService {
   }
 
   logout() {
+    // Keep offline credentials but clear session
+    const offUser = localStorage.getItem('offline_user');
+    const offPass = localStorage.getItem('offline_pass');
+    const offIdToken = localStorage.getItem('offlineIdToken');
+    const offQrToken = localStorage.getItem('offlineQrToken');
+
     localStorage.clear();
+
+    if (offUser) localStorage.setItem('offline_user', offUser);
+    if (offPass) localStorage.setItem('offline_pass', offPass);
+    if (offIdToken) localStorage.setItem('offlineIdToken', offIdToken);
+    if (offQrToken) localStorage.setItem('offlineQrToken', offQrToken);
+  }
+
+  verifyOffline(username: string, password: string): boolean {
+    const savedUser = localStorage.getItem('offline_user');
+    const savedPass = localStorage.getItem('offline_pass');
+
+    if (!savedUser || !savedPass) return false;
+
+    return username.toLowerCase() === savedUser && btoa(password) === savedPass;
   }
 
   isLoggedIn(): boolean {

@@ -16,7 +16,13 @@
 
       <div class="user-info">
         <h2>{{ profile.name }}</h2>
-        <div class="role-badge">{{ role }}</div>
+        <div class="header-badges">
+          <div class="role-badge">{{ role }}</div>
+          <div class="offline-badge" *ngIf="isOffline">
+            <ion-icon name="cloud-offline-outline"></ion-icon>
+            <span>Offline</span>
+          </div>
+        </div>
       </div>
     </div>
 

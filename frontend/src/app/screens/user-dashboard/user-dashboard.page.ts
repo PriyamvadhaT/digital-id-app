@@ -10,7 +10,8 @@ import {
   lockClosedOutline, 
   scanCircleOutline, 
   logOutOutline,
-  person
+  person,
+  cloudOfflineOutline
 } from 'ionicons/icons';
 
 import { AuthService } from '../../services/auth.service';
@@ -31,6 +32,7 @@ export class UserDashboardPage {
 
   profile: any = null;
   role = '';
+  isOffline = !navigator.onLine;
 
   constructor(
     private router: Router,
@@ -43,7 +45,8 @@ export class UserDashboardPage {
       chevronForwardOutline,
       lockClosedOutline,
       scanCircleOutline,
-      logOutOutline
+      logOutOutline,
+      cloudOfflineOutline
     });
 
   }
@@ -56,6 +59,7 @@ export class UserDashboardPage {
       return;
     }
 
+    this.isOffline = !navigator.onLine;
     this.loadProfile();
 
   }

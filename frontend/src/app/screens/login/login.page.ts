@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import {
@@ -24,6 +25,7 @@ import {
 } from 'ionicons/icons';
 
 import { AuthService } from '../../services/auth.service';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-login',
@@ -52,7 +54,8 @@ export class LoginPage {
 
   constructor(
     private router: Router,
-    private auth: AuthService
+    private auth: AuthService,
+    private http: HttpClient
   ) {
     addIcons({
       schoolOutline,
@@ -87,22 +90,42 @@ export class LoginPage {
 
   login() {
 
-    /* FIRST LOGIN MUST BE ONLINE */
+    const cleanUsername = this.username.trim().toLowerCase();
+    const cleanPassword = this.password;
 
-    const token = localStorage.getItem('token');
-
-    if (!navigator.onLine && !token) {
-      alert('First login requires internet connection');
-      return;
-    }
-
-    if (!this.username || !this.password) {
+    if (!cleanUsername || !cleanPassword) {
       alert('Enter username and password');
       return;
     }
 
-    const cleanUsername = this.username.trim().toLowerCase();
-    const cleanPassword = this.password;
+    /* HANDLE OFFLINE LOGIN */
+    if (!navigator.onLine) {
+      if (this.auth.verifyOffline(cleanUsername, cleanPassword)) {
+        const savedRole = localStorage.getItem('role') || 'user';
+        
+        // Verify role match for offline login
+        if (this.selectedRole === 'admin' && savedRole !== 'admin') {
+          alert('This is not an admin account');
+          return;
+        }
+        if (this.selectedRole === 'user' && savedRole === 'admin') {
+          alert('Admins cannot login as Users');
+          return;
+        }
+
+        localStorage.setItem('loggedIn', 'true');
+        
+        if (savedRole === 'admin') {
+          this.router.navigate(['/admin-dashboard'], { replaceUrl: true });
+        } else {
+          this.router.navigate(['/user-dashboard'], { replaceUrl: true });
+        }
+        return;
+      } else {
+        alert('Offline login failed. First login must be online or credentials mismatch.');
+        return;
+      }
+    }
 
     this.auth.login(cleanUsername, cleanPassword).subscribe({
 
@@ -119,7 +142,24 @@ export class LoginPage {
           return;
         }
 
-        this.auth.saveSession(res.token, res.role, res.userId);
+        this.auth.saveSession(res.token, res.role, res.userId, cleanUsername, cleanPassword);
+
+        // ✅ PRE-FETCH ID DATA FOR OFFLINE USE (for regular users)
+        if (res.role === 'user') {
+          this.http.get<any>(`${environment.apiUrl}/id/my-id`, {
+            headers: { Authorization: `Bearer ${res.token}` }
+          }).subscribe({
+            next: (idRes: any) => {
+              if (idRes.idToken) {
+                localStorage.setItem('offlineIdToken', idRes.idToken);
+              }
+              if (idRes.qrToken) {
+                localStorage.setItem('offlineQrToken', idRes.qrToken);
+              }
+            },
+            error: (err: any) => console.log('Pre-fetch failed:', err)
+          });
+        }
 
         // ✅ NAVIGATION
         if (res.role === 'admin') {
