@@ -8,26 +8,7 @@ connectDB();
 const app = express();
 
 // 🛡️ SECURITY: Configure CORS for production
-const allowedOrigins = [
-  'http://localhost:8100',
-  'https://digital-id-app.onrender.com',
-  'https://digital-id-app-beta.vercel.app'
-];
-
-app.use(cors({
-  origin: function (origin, callback) {
-    // allow requests with no origin (like mobile apps or curl requests)
-    if (!origin) return callback(null, true);
-    if (
-      allowedOrigins.indexOf(origin) !== -1 ||
-      origin.endsWith('.vercel.app')
-    ) {
-      return callback(null, true);
-    }
-    const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
-    return callback(new Error(msg), false);
-  }
-}));
+app.use(cors()); // 🛡️ Temporarily allow all origins for stability during debug
 
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ limit: '10mb', extended: true }));

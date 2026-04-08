@@ -345,116 +345,117 @@ exports.updateStudent = async (req, res) => {
 const VerificationLog = require('../models/verificationLog');
 
 exports.verifyQr = async (req, res) => {
-  try {
-    const { token } = req.body;
+  const { token } = req.body;
+  const scanner = req.user;
 
-    if (!token) {
-      return res.status(400).json({ valid: false, message: 'QR Token is required' });
+  try {
+    if (!token || typeof token !== 'string') {
+      return res.status(400).json({ valid: false, message: 'Invalid or missing QR token' });
     }
 
-    const scanner = req.user; // from auth middleware
-  
-    let decoded = null;
     let userId = null;
+    let decoded = null;
 
-    if (typeof token === 'string' && token.startsWith('V1:')) {
-      // 🛡️ Simple ID format (Fast scan)
+    if (token.startsWith('V1:')) {
       userId = token.split(':')[1];
     } else {
-      // 🛡️ Verify JWT Token (Legacy fallback)
-      decoded = jwt.verify(token, process.env.JWT_SECRET);
-      userId = decoded.userId;
+      try {
+        decoded = jwt.verify(token, process.env.JWT_SECRET);
+        userId = decoded.userId;
+      } catch (jwtErr) {
+        return res.status(400).json({ valid: false, message: 'Expired or invalid QR token' });
+      }
     }
- 
-    const user = await User.findById(userId);
+
+    if (!userId) {
+      return res.status(400).json({ valid: false, message: 'Malformed QR data' });
+    }
+
+    // 🛡️ SAFELY LOOKUP USER
+    let user;
+    try {
+      user = await User.findById(userId);
+    } catch (castErr) {
+      return res.status(400).json({ valid: false, message: 'Invalid ID format in QR' });
+    }
 
     if (!user) {
-      await VerificationLog.create({
-        scannedBy: scanner._id,
-        result: 'INVALID'
-      });
-
-      return res.json({ valid: false, message: 'User not found' });
+      // Log failure safely in background
+      VerificationLog.create({ scannedBy: scanner?._id, result: 'INVALID' }).catch(() => {});
+      return res.status(404).json({ valid: false, message: 'Identity not found' });
     }
 
-    // Look up the actual profile from the correct collection
+    // Safely look up profile
     let profile = null;
-    if (user.role === 'Student') {
-      profile = await Student.findById(user.profileId);
-    } else if (user.role === 'Employee') {
-      profile = await Employee.findById(user.profileId);
+    try {
+      if (user.role === 'Student') {
+        profile = await Student.findById(user.profileId);
+      } else if (user.role === 'Employee') {
+        profile = await Employee.findById(user.profileId);
+      }
+    } catch (profileErr) {
+      console.error('Profile lookup error:', profileErr);
     }
 
-    // 🚨 EMPLOYEE restriction
+    // 🛡️ ROLE RESTRICTION
     if (scanner.role === 'Employee' && user.role !== 'Student') {
-
-      await VerificationLog.create({
+      VerificationLog.create({
         scannedBy: scanner._id,
         scannedUser: user._id,
         scannedName: profile?.name,
-        scannedId: profile?.id,
-        scannedRole: user.role,
         result: 'NOT ALLOWED'
-      });
+      }).catch(() => {});
 
-      return res.json({
+      return res.status(403).json({
         valid: false,
-        message: 'Employees can scan only students'
+        message: 'Restricted: Non-Student ID scanned'
       });
     }
 
-    // ❌ inactive
+    // 🛡️ ACCOUNT STATUS
     if (user.isActive === false) {
-
-      await VerificationLog.create({
+      VerificationLog.create({
         scannedBy: scanner._id,
         scannedUser: user._id,
         scannedName: profile?.name,
-        scannedId: profile?.id,
-        scannedRole: user.role,
-        result: 'INVALID'
-      });
+        result: 'INACTIVE'
+      }).catch(() => {});
 
       return res.json({
         valid: false,
         isActive: false,
-        message: 'ID INACTIVE',
-        name: profile?.name || 'Unknown',
+        message: 'ID DEACTIVATED',
+        name: profile?.name || 'User',
         id: profile?.id || 'N/A',
-        department: profile?.department || '',
-        role: user.role,
-        photo: profile?.photo || ''
+        role: user.role
       });
     }
 
-    // ✅ VALID
-    await VerificationLog.create({
+    // ✅ SUCCESS
+    VerificationLog.create({
       scannedBy: scanner._id,
       scannedUser: user._id,
       scannedName: profile?.name,
-      scannedId: profile?.id,
-      scannedRole: user.role,
       result: 'VALID'
-    });
+    }).catch(() => {});
 
-    res.json({
+    return res.json({
       valid: true,
       isActive: true,
-      name: profile?.name || decoded?.name || 'Unknown',
-      id: profile?.id || decoded?.id || 'N/A',
-      department: profile?.department || decoded?.department || '',
+      name: profile?.name || 'User',
+      id: profile?.id || 'N/A',
+      department: profile?.department || '',
       role: user.role,
       photo: profile?.photo || ''
     });
 
   } catch (err) {
-
-    await VerificationLog.create({
-      scannedBy: req.user?._id,
-      result: 'INVALID'
+    console.error('🚀 VERIFY_QR CRASH:', err);
+    return res.status(500).json({ 
+      valid: false, 
+      message: 'Server verification error',
+      error: err.message 
     });
-
-    res.json({ valid: false, message: 'Invalid QR' });
   }
 };
 
