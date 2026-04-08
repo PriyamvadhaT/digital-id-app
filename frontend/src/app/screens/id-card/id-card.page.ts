@@ -185,10 +185,10 @@ export class IdCardPage {
       await new Promise(resolve => setTimeout(resolve, 800));
 
       const canvas = await html2canvas(data, {
-        scale: 4, // 💎 Ultra Premium Quality
+        scale: 2.5, // 🚀 Optimized for both quality and memory
         useCORS: true,
-        allowTaint: true,
-        logging: false,
+        allowTaint: false, // 🔒 Taint must be false for export to work
+        logging: true, // Enable for better debugging if it fails again
         backgroundColor: '#ffffff',
         imageTimeout: 15000,
         onclone: (clonedDoc) => {

@@ -18,7 +18,8 @@ import {
   scanCircleOutline,
   shieldCheckmarkOutline,
   powerOutline,
-  statsChartOutline
+  statsChartOutline,
+  cloudOfflineOutline
 } from 'ionicons/icons';
 
 import { AuthService } from '../../services/auth.service';
@@ -39,6 +40,7 @@ export class AdminDashboardPage {
   studentCount = 0;
   employeeCount = 0;
   scanCount = 0;
+  isOffline = !navigator.onLine;
 
   constructor(
     private router: Router,
@@ -53,12 +55,14 @@ export class AdminDashboardPage {
       scanCircleOutline,
       shieldCheckmarkOutline,
       powerOutline,
-      statsChartOutline
+      statsChartOutline,
+      cloudOfflineOutline
     });
 
   }
 
   ionViewWillEnter() {
+    this.isOffline = !navigator.onLine;
     this.loadStats();
   }
 
