@@ -178,59 +178,67 @@ exports.getEmployees = async (req, res) => {
 
 /* ===================== UPDATE STATUS (ADMIN) ===================== */
 exports.updateStudentStatus = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { isActive } = req.body;
 
-  const { id } = req.params;
-  const { isActive } = req.body;
+    await Student.findByIdAndUpdate(id, { isActive });
+    await User.findOneAndUpdate(
+      { profileId: id, role: 'Student' },
+      { isActive }
+    );
 
-  await Student.findByIdAndUpdate(id, { isActive });
-
-  await User.findOneAndUpdate(
-    { profileId: id, role: 'Student' },
-    { isActive }
-  );
-
-  res.json({ message: 'Student status updated' });
+    res.json({ message: 'Student status updated' });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 };
 
 
 exports.updateEmployeeStatus = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { isActive } = req.body;
 
-  const { id } = req.params;
-  const { isActive } = req.body;
+    await Employee.findByIdAndUpdate(id, { isActive });
+    await User.findOneAndUpdate(
+      { profileId: id, role: 'Employee' },
+      { isActive }
+    );
 
-  await Employee.findByIdAndUpdate(id, { isActive });
-
-  await User.findOneAndUpdate(
-    { profileId: id, role: 'Employee' },
-    { isActive }
-  );
-
-  res.json({ message: 'Employee status updated' });
+    res.json({ message: 'Employee status updated' });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 };
 
 
 /* ===================== DELETE (ADMIN) ===================== */
 exports.deleteStudent = async (req, res) => {
+  try {
+    const { id } = req.params;
 
-  const { id } = req.params;
+    await Student.findByIdAndUpdate(id, { isActive: false });
+    await User.findOneAndUpdate({ profileId: id, role: 'Student' }, { isActive: false });
 
-  await Student.findByIdAndUpdate(id, { isActive: false });
-  await User.findOneAndUpdate({ profileId: id, role: 'Student' }, { isActive: false });
-
-  res.json({ message: 'Student soft deleted' });
-
+    res.json({ message: 'Student soft deleted' });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 };
 
 
 exports.deleteEmployee = async (req, res) => {
+  try {
+    const { id } = req.params;
 
-  const { id } = req.params;
+    await Employee.findByIdAndUpdate(id, { isActive: false });
+    await User.findOneAndUpdate({ profileId: id, role: 'Employee' }, { isActive: false });
 
-  await Employee.findByIdAndUpdate(id, { isActive: false });
-  await User.findOneAndUpdate({ profileId: id, role: 'Employee' }, { isActive: false });
-
-  res.json({ message: 'Employee soft deleted' });
-
+    res.json({ message: 'Employee soft deleted' });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 };
 
 /* ===================== GET MY ID (ID CARD) ===================== */
@@ -300,33 +308,37 @@ exports.getMyId = async (req, res) => {
 
 /* ===================== UPDATE EMPLOYEE (ADMIN) ===================== */
 exports.updateEmployee = async (req, res) => {
+  try {
+    const { id } = req.params;
 
-  const { id } = req.params;
+    await Employee.findByIdAndUpdate(id, {
+      name: req.body.name,
+      department: req.body.department,
+      mobile: req.body.mobile
+    });
 
-  await Employee.findByIdAndUpdate(id, {
-    name: req.body.name,
-    department: req.body.department,
-    mobile: req.body.mobile
-  });
-
-  res.json({ message: "Employee updated" });
-
+    res.json({ message: "Employee updated" });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 };
 
 /* ===================== UPDATE STUDENT (ADMIN) ===================== */
 exports.updateStudent = async (req, res) => {
+  try {
+    const { id } = req.params;
 
-  const { id } = req.params;
+    await Student.findByIdAndUpdate(id, {
+      name: req.body.name,
+      department: req.body.department,
+      batch: req.body.batch,
+      mobile: req.body.mobile
+    });
 
-  await Student.findByIdAndUpdate(id, {
-    name: req.body.name,
-    department: req.body.department,
-    batch: req.body.batch,
-    mobile: req.body.mobile
-  });
-
-  res.json({ message: "Student updated" });
-
+    res.json({ message: "Student updated" });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 };
 
 /* ===================== VERIFY QR SCAN ============================== */
@@ -336,12 +348,16 @@ exports.verifyQr = async (req, res) => {
   try {
     const { token } = req.body;
 
+    if (!token) {
+      return res.status(400).json({ valid: false, message: 'QR Token is required' });
+    }
+
     const scanner = req.user; // from auth middleware
- 
+  
     let decoded = null;
     let userId = null;
 
-    if (token.startsWith('V1:')) {
+    if (typeof token === 'string' && token.startsWith('V1:')) {
       // 🛡️ Simple ID format (Fast scan)
       userId = token.split(':')[1];
     } else {

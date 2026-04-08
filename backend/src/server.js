@@ -42,6 +42,15 @@ app.get('/', (req, res) => {
   res.send('Digital ID Backend Running');
 });
 
+// 🚨 GLOBAL ERROR HANDLER
+app.use((err, req, res, next) => {
+  console.error('🔥 UNHANDLED ERROR:', err.stack);
+  res.status(500).json({
+    message: 'Something went wrong on the server',
+    error: process.env.NODE_ENV === 'production' ? null : err.message
+  });
+});
+
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, '0.0.0.0', () => {
