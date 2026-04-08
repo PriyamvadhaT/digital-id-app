@@ -181,57 +181,72 @@ export class IdCardPage {
     this.isLoading = true;
 
     try {
-      // 🕒 Ensure all assets are loaded (especially images and QR)
-      await new Promise(resolve => setTimeout(resolve, 800));
+      console.log('PDF Export: Initializing...');
+      await new Promise(resolve => setTimeout(resolve, 1000));
 
-      const canvas = await html2canvas(data, {
-        scale: 2.5, // 🚀 Optimized for both quality and memory
-        useCORS: true,
-        allowTaint: false, // 🔒 Taint must be false for export to work
-        logging: true, // Enable for better debugging if it fails again
-        backgroundColor: '#ffffff',
-        imageTimeout: 15000,
-        onclone: (clonedDoc) => {
-          const clonedCard = clonedDoc.getElementById('id-card-to-export');
-          if (clonedCard) {
-            clonedCard.style.transform = 'none';
-            clonedCard.style.boxShadow = 'none';
-            
-            // Hide decorative elements that often cause capture artifacts
-            const toHide = ['.card-glint', '.card-pattern', '.card-bg-glow', '.avatar-ring'];
-            toHide.forEach(selector => {
-              const el = clonedCard.querySelector(selector) as HTMLElement;
-              if (el) el.style.display = 'none';
-            });
-            
-            // Fix any sizing issues in capture
-            clonedCard.style.width = '340px';
+      // 1️⃣ CAPTURE PHASE
+      let canvas;
+      try {
+        canvas = await html2canvas(data, {
+          scale: 2, // 🛡️ Safe scale for mobile memory
+          useCORS: true,
+          allowTaint: false,
+          logging: false,
+          backgroundColor: '#ffffff',
+          onclone: (clonedDoc) => {
+            const card = clonedDoc.getElementById('id-card-to-export');
+            if (card) {
+              card.style.transform = 'none';
+              card.style.boxShadow = 'none';
+              
+              // 🔩 Fix Shadow DOM / Ionic components for capture
+              const icons = card.querySelectorAll('ion-icon');
+              icons.forEach(icon => {
+                const name = icon.getAttribute('name');
+                const replacement = clonedDoc.createElement('span');
+                replacement.innerText = name?.includes('checkmark') ? '✓' : '•';
+                replacement.style.color = '#22c55e';
+                replacement.style.fontWeight = 'bold';
+                icon.parentNode?.replaceChild(replacement, icon);
+              });
+
+              // Hide decorative elements
+              const decorations = ['.card-glint', '.card-pattern', '.card-bg-glow', '.avatar-ring'];
+              decorations.forEach(sel => {
+                const el = card.querySelector(sel) as HTMLElement;
+                if (el) el.style.display = 'none';
+              });
+              
+              card.style.width = '340px';
+              card.style.margin = '0';
+            }
           }
-        }
-      });
+        });
+      } catch (captureError) {
+        console.error('Capture Error:', captureError);
+        throw new Error('Capture Phase Failed');
+      }
 
-      const imgData = canvas.toDataURL('image/png', 1.0);
-      
+      // 2️⃣ PROCESSING PHASE
+      const imgData = canvas.toDataURL('image/png', 0.8);
+      if (!imgData || imgData === 'data:,') throw new Error('Image Processing Failed');
+
+      // 3️⃣ ASSEMBLY PHASE
       const pdf = new jsPDF('p', 'mm', 'a4');
       const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = pdf.internal.pageSize.getHeight();
       
       const imgWidth = 160; 
       const imgHeight = (canvas.height * imgWidth) / canvas.width;
-      
       const xPos = (pdfWidth - imgWidth) / 2;
       const yPos = 30;
 
-      // 🎨 Add Header Branding
-      pdf.setFillColor(37, 99, 235); // Blue primary
+      pdf.setFillColor(37, 99, 235);
       pdf.rect(0, 0, pdfWidth, 20, 'F');
-      
       pdf.setFont('helvetica', 'bold');
       pdf.setFontSize(14);
       pdf.setTextColor(255, 255, 255);
       pdf.text('OFFICIAL DIGITAL IDENTIFICATION', pdfWidth / 2, 13, { align: 'center' });
       
-      // 📄 Add Body Content
       pdf.setFont('helvetica', 'normal');
       pdf.setTextColor(100);
       pdf.setFontSize(10);
@@ -239,20 +254,18 @@ export class IdCardPage {
       
       pdf.addImage(imgData, 'PNG', xPos, yPos, imgWidth, imgHeight);
       
-      // 📋 Footer Info
       const footerY = yPos + imgHeight + 15;
       pdf.setFontSize(9);
       pdf.setTextColor(150);
-      pdf.text('This is a verified digital document generated via the Digital ID Portal.', pdfWidth / 2, footerY, { align: 'center' });
-      pdf.text(`Generated Date: ${new Date().toLocaleString()}`, pdfWidth / 2, footerY + 5, { align: 'center' });
-      pdf.text(`Security Hash: ${btoa(this.profile.id + Date.now()).substring(0, 24)}`, pdfWidth / 2, footerY + 10, { align: 'center' });
+      pdf.text('This is a verified digital document.', pdfWidth / 2, footerY, { align: 'center' });
+      pdf.text(`Generated: ${new Date().toLocaleDateString()}`, pdfWidth / 2, footerY + 5, { align: 'center' });
 
-      // 🏁 Save File
-      const fileName = `DigitalID_${this.profile.name.replace(/\s+/g, '_')}_${this.profile.id}.pdf`;
-      pdf.save(fileName);
-    } catch (error) {
-      console.error('PDF Export Error:', error);
-      alert('Failed to generate PDF. Please try again.');
+      pdf.save(`DigitalID_${this.profile.id}.pdf`);
+      console.log('PDF Export: Success');
+
+    } catch (error: any) {
+      console.error('Final PDF Error:', error);
+      alert(`Export Failed: ${error.message || 'Unknown Error'}. Please use a modern browser.`);
     } finally {
       this.isLoading = false;
     }
