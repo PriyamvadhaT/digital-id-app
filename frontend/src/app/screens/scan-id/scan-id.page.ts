@@ -19,7 +19,9 @@ import {
   close,
   closeCircle,
   flashOutline,
-  ribbonOutline
+  ribbonOutline,
+  banOutline,
+  checkmarkCircle
 } from 'ionicons/icons';
 
 @Component({
@@ -54,7 +56,9 @@ export class ScanIdPage {
       close,
       closeCircle,
       flashOutline,
-      ribbonOutline
+      ribbonOutline,
+      banOutline,
+      checkmarkCircle
     });
 
   }

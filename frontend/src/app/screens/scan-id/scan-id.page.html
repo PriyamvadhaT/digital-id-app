@@ -33,15 +33,19 @@
     </div>
 
     <!-- 🛡️ Premium Verification Result Dialog -->
-    <div *ngIf="scanResult" class="result-overlay animated-fade-in" [class.success-bg]="verification === 'VALID'" [class.error-bg]="verification !== 'VALID'">
-      <div class="result-card-glass" [class.is-valid]="verification === 'VALID'">
+    <div *ngIf="scanResult" class="result-overlay animated-fade-in"
+         [class.success-bg]="scanResult.isActive === true"
+         [class.error-bg]="scanResult.isActive === false || scanResult.isActive === undefined">
+      <div class="result-card-glass" [class.is-valid]="scanResult.isActive === true">
         
+        <!-- Status Header -->
         <div class="status-indicator-box">
           <div class="pulse-ring"></div>
-          <ion-icon [name]="verification === 'VALID' ? 'shield-checkmark' : 'alert-circle'"></ion-icon>
-          <h2 class="status-text">{{ verification === 'VALID' ? 'ACCESS GRANTED' : 'ACCESS DENIED' }}</h2>
+          <ion-icon [name]="scanResult.isActive ? 'shield-checkmark' : 'alert-circle'"></ion-icon>
+          <h2 class="status-text">{{ scanResult.isActive ? 'ACCESS GRANTED' : 'ACCESS DENIED' }}</h2>
         </div>
 
+        <!-- Profile Block -->
         <div class="profile-card">
           <div class="portrait-container">
             <img 
@@ -52,32 +56,38 @@
             <div *ngIf="!scanResult.photo" class="portrait-placeholder">
               {{ (scanResult.name || 'U')?.charAt(0) }}
             </div>
-            <div class="verification-seal">
-              <ion-icon name="ribbon-outline"></ion-icon>
+            <div class="verification-seal" [class.seal-active]="scanResult.isActive" [class.seal-inactive]="!scanResult.isActive">
+              <ion-icon [name]="scanResult.isActive ? 'ribbon-outline' : 'ban-outline'"></ion-icon>
             </div>
           </div>
 
           <div class="profile-text">
             <h3 class="user-name">{{ scanResult.name || 'Unknown User' }}</h3>
             <span class="user-role-badge" [class.role-admin]="scanResult.role === 'Admin'">{{ scanResult.role }}</span>
-            <p class="user-id-text">CID: {{ scanResult.id || 'N/A' }}</p>
+            <p class="user-id-text">ID: {{ scanResult.id || 'N/A' }}</p>
           </div>
         </div>
 
+        <!-- Info Row with ACTIVE / DEACTIVATED status -->
         <div class="info-row">
           <div class="info-item">
-            <span class="info-label">Organization Unit</span>
+            <span class="info-label">Department</span>
             <span class="info-value">{{ getDeptCode(scanResult.department) || 'N/A' }}</span>
           </div>
           <div class="info-item">
-            <span class="info-label">Security Logic</span>
-            <span class="info-value status-color">{{ verification === 'VALID' ? 'AUTHORIZED' : 'RESTRICTED' }}</span>
+            <span class="info-label">Account Status</span>
+            <span class="info-value status-badge"
+                  [class.badge-active]="scanResult.isActive === true"
+                  [class.badge-deactivated]="scanResult.isActive === false">
+              <ion-icon [name]="scanResult.isActive ? 'checkmark-circle' : 'close-circle'"></ion-icon>
+              {{ scanResult.isActive ? 'ACTIVE' : 'DEACTIVATED' }}
+            </span>
           </div>
         </div>
 
         <div class="card-footer">
           <ion-button fill="clear" (click)="dismissResult()" class="full-width-dismiss">
-            DISMISS & RESET
+            DISMISS &amp; RESET
           </ion-button>
         </div>
       </div>

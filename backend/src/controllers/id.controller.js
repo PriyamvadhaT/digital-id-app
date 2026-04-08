@@ -401,7 +401,13 @@ exports.verifyQr = async (req, res) => {
 
       return res.json({
         valid: false,
-        message: 'ID INACTIVE'
+        isActive: false,
+        message: 'ID INACTIVE',
+        name: profile?.name || 'Unknown',
+        id: profile?.id || 'N/A',
+        department: profile?.department || '',
+        role: user.role,
+        photo: profile?.photo || ''
       });
     }
 
@@ -417,9 +423,10 @@ exports.verifyQr = async (req, res) => {
 
     res.json({
       valid: true,
-      name: profile?.name || decoded.name || 'Unknown',
-      id: profile?.id || decoded.id || 'N/A',
-      department: profile?.department || decoded.department || '',
+      isActive: true,
+      name: profile?.name || decoded?.name || 'Unknown',
+      id: profile?.id || decoded?.id || 'N/A',
+      department: profile?.department || decoded?.department || '',
       role: user.role,
       photo: profile?.photo || ''
     });
