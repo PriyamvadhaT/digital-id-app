@@ -181,113 +181,67 @@ export class IdCardPage {
     this.isLoading = true;
 
     try {
-      console.log('PDF Export: Manual Assembly Start...');
-      // 📐 Define PDF dimensions and margins
+      console.log('PDF Export: High-Fidelity Capture Start...');
+      await new Promise(resolve => setTimeout(resolve, 500)); 
+
+      const canvas = await html2canvas(data, {
+        scale: 2, // 🛡️ Balanced for quality and memory
+        useCORS: true,
+        allowTaint: false,
+        logging: false,
+        backgroundColor: '#f8fafc',
+        imageTimeout: 15000,
+        onclone: (clonedDoc) => {
+          const card = clonedDoc.getElementById('id-card-to-export');
+          if (card) {
+            // Remove 3D effects for flat capture
+            card.style.transform = 'none';
+            card.style.transition = 'none';
+            card.style.animation = 'none';
+            
+            // Fix Ionic/Shadow DOM elements
+            const icons = card.querySelectorAll('ion-icon');
+            icons.forEach(icon => {
+              const name = icon.getAttribute('name');
+              const span = clonedDoc.createElement('span');
+              span.innerHTML = name?.includes('shield') ? '🛡️' : '✓';
+              span.style.fontSize = '24px';
+              icon.parentNode?.replaceChild(span, icon);
+            });
+
+            // Ensure card is properly sized for capture
+            card.style.width = '340px';
+            card.style.height = 'auto';
+            card.style.boxShadow = 'none';
+            card.style.border = '1px solid #e2e8f0';
+          }
+        }
+      });
+
+      const imgData = canvas.toDataURL('image/png', 0.9);
+      
       const pdf = new jsPDF('p', 'mm', 'a4');
       const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pageWidth = 140; // Card width in PDF (slightly smaller for elegance)
-      const xStart = (pdfWidth - pageWidth) / 2;
-      const yStart = 40;
-
-      // 1️⃣ DRAW HEADER (Blue Section)
-      pdf.setFillColor(37, 99, 235); // Blue primary (#2563eb)
-      pdf.roundedRect(xStart, yStart, pageWidth, 50, 5, 5, 'F');
       
-      // 2️⃣ ADD DOCUMENT TITLE
-      pdf.setFont('helvetica', 'bold');
-      pdf.setFontSize(14);
-      pdf.setTextColor(255, 255, 255);
-      pdf.text('DIGITAL IDENTIFICATION CARD', pdfWidth / 2, yStart + 15, { align: 'center' });
+      const imgWidth = 170; // Larger for high-fidelity look
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      const xPos = (pdfWidth - imgWidth) / 2;
+      const yPos = 20;
+
+      // 📄 Add the high-fidelity capture to PDF
+      pdf.addImage(imgData, 'PNG', xPos, yPos, imgWidth, imgHeight);
       
-      let currentY = yStart + 60;
+      // 📋 Minimalist Footer
+      pdf.setFontSize(8);
+      pdf.setTextColor(180);
+      pdf.text(`Official Digital ID - Generated on ${new Date().toLocaleDateString()}`, pdfWidth / 2, yPos + imgHeight + 10, { align: 'center' });
 
-      // 3️⃣ ADD PROFILE PHOTO
-      if (this.profile.photo) {
-        try {
-          const photoBase64 = this.profile.photo.startsWith('data:') 
-            ? this.profile.photo 
-            : 'data:image/jpeg;base64,' + this.profile.photo;
-          pdf.addImage(photoBase64, 'JPEG', xStart + 10, currentY, 40, 40);
-        } catch (photoErr) {
-          console.warn('Could not add photo to PDF:', photoErr);
-          pdf.rect(xStart + 10, currentY, 40, 40); // Placeholder box
-          pdf.text('PHOTO', xStart + 20, currentY + 20);
-        }
-      }
-
-      // 4️⃣ ADD USER'S PERSONAL DETAILS
-      pdf.setTextColor(15, 23, 42); // Dark slate (#0f172a)
-      const detailsX = xStart + 60;
-      let textY = currentY + 5;
-
-      pdf.setFontSize(18);
-      pdf.text(this.profile.name || 'Unknown', detailsX, textY);
-      
-      textY += 10;
-      pdf.setFontSize(10);
-      pdf.setFont('helvetica', 'normal');
-      pdf.setTextColor(100);
-      pdf.text(`ID: ${this.profile.id}`, detailsX, textY);
-      
-      textY += 10;
-      pdf.setFont('helvetica', 'bold');
-      pdf.setTextColor(37, 99, 235);
-      pdf.text(this.role.toUpperCase(), detailsX, textY);
-
-      currentY += 50;
-
-      // 5️⃣ ADD OTHER DETAILS (Department, etc.)
-      pdf.setDrawColor(241, 245, 249);
-      pdf.line(xStart + 10, currentY, xStart + pageWidth - 10, currentY);
-      currentY += 10;
-
-      pdf.setFontSize(11);
-      pdf.setFont('helvetica', 'bold');
-      pdf.setTextColor(100);
-      pdf.text('Department:', xStart + 10, currentY);
-      pdf.setFont('helvetica', 'normal');
-      pdf.setTextColor(15, 23, 42);
-      pdf.text(this.profile.department || 'N/A', xStart + 40, currentY);
-
-      if (this.profile.batch) {
-        currentY += 8;
-        pdf.setFont('helvetica', 'bold');
-        pdf.setTextColor(100);
-        pdf.text('Batch:', xStart + 10, currentY);
-        pdf.setFont('helvetica', 'normal');
-        pdf.setTextColor(15, 23, 42);
-        pdf.text(this.profile.batch, xStart + 40, currentY);
-      }
-
-      currentY += 15;
-
-      // 6️⃣ ADD QR CODE (EXTRACT FROM PAGE CANVAS)
-      try {
-        const qrCanvas = document.querySelector('canvas');
-        if (qrCanvas) {
-          const qrData = qrCanvas.toDataURL('image/png');
-          const qrSize = 45;
-          pdf.addImage(qrData, 'PNG', (pdfWidth - qrSize) / 2, currentY, qrSize, qrSize);
-          currentY += qrSize + 10;
-        }
-      } catch (qrErr) {
-        console.warn('QR Code extraction failed:', qrErr);
-      }
-
-      // 7️⃣ FOOTER & BRANDING
-      pdf.setFontSize(9);
-      pdf.setTextColor(150);
-      pdf.text('Generated via Official Digital ID Portal', pdfWidth / 2, currentY + 10, { align: 'center' });
-      pdf.text(`Document Ref: ${this.profile.id}-${Date.now()}`, pdfWidth / 2, currentY + 15, { align: 'center' });
-
-      // 🏁 FINISH & DOWNLOAD
-      const fileName = `DigitalID_${this.profile.name?.replace(/\s+/g, '_')}.pdf`;
-      pdf.save(fileName);
-      console.log('PDF Export: Manual Assembly Success');
+      pdf.save(`DigitalID_${this.profile.name?.replace(/\s+/g, '_')}.pdf`);
+      console.log('PDF Export: Success');
 
     } catch (error: any) {
-      console.error('Manual PDF Error:', error);
-      alert(`Export Failed: ${error.message || 'System error during assembly'}. Please try again.`);
+      console.error('High-Fidelity Export Error:', error);
+      alert('Failed to generate high-quality PDF. Please try again or ensure you are using a modern browser.');
     } finally {
       this.isLoading = false;
     }
