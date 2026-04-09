@@ -45,7 +45,7 @@ export class SplashPage implements OnInit {
 
         if (loggedIn) {
 
-          if (role === 'Admin') {
+          if (role === 'admin') {
             this.router.navigate(['/admin-dashboard']);
           } else {
             this.router.navigate(['/user-dashboard']);
