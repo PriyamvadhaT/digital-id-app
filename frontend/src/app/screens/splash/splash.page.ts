@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
+import { AuthService } from '../../services/auth.service';
 
 import { addIcons } from 'ionicons';
 import { cardOutline } from 'ionicons/icons';
@@ -16,43 +17,49 @@ export class SplashPage implements OnInit {
 
   progress = 0;
 
-  constructor(private router: Router) {
+  constructor(
+    private router: Router,
+    private auth: AuthService
+  ) {
+
     addIcons({
       'card-outline': cardOutline
     });
+
   }
 
   ngOnInit() {
 
-    // simple progress animation (no blocking logic)
     const interval = setInterval(() => {
-      if (this.progress < 90) {
-        this.progress += 10;
+
+      if (this.progress < 100) {
+        this.progress += 5;
       }
-    }, 100);
 
-    // ✅ MAIN LOGIC (NO FREEZE)
-    setTimeout(() => {
+      if (this.progress >= 100) {
 
-      clearInterval(interval);
-      this.progress = 100;
+        clearInterval(interval);
 
-      const token = localStorage.getItem('token');
-      const role = localStorage.getItem('role');
+        const loggedIn = this.auth.isLoggedIn();
+        const role = this.auth.getRole();
 
-      console.log('SPLASH:', { token, role });
+        if (loggedIn) {
 
-      if (token) {
-        if (role === 'admin') {
-          this.router.navigateByUrl('/admin-dashboard', { replaceUrl: true });
+          if (role === 'Admin') {
+            this.router.navigate(['/admin-dashboard']);
+          } else {
+            this.router.navigate(['/user-dashboard']);
+          }
+
         } else {
-          this.router.navigateByUrl('/user-dashboard', { replaceUrl: true });
+
+          this.router.navigate(['/login']);
+
         }
-      } else {
-        this.router.navigateByUrl('/login', { replaceUrl: true });
+
       }
 
-    }, 1500);
+    }, 70);
 
   }
 
