@@ -67,6 +67,23 @@ export class LoginPage {
     });
   }
 
+  ionViewWillEnter() {
+
+    const token = localStorage.getItem('token');
+    const role = localStorage.getItem('role');
+
+    if (token) {
+
+      if (role === 'admin') {
+        this.router.navigate(['/admin-dashboard'], { replaceUrl: true });
+      } else {
+        this.router.navigate(['/user-dashboard'], { replaceUrl: true });
+      }
+
+    }
+
+  }
+
   togglePassword(){
     this.showPassword = !this.showPassword;
   }
@@ -81,55 +98,54 @@ export class LoginPage {
       return;
     }
 
-    /* 🔴 OFFLINE LOGIN */
+    /* HANDLE OFFLINE LOGIN */
     if (!navigator.onLine) {
       if (this.auth.verifyOffline(cleanUsername, cleanPassword)) {
-
         const savedRole = localStorage.getItem('role') || 'user';
-
-        localStorage.setItem('loggedIn', 'true');
-
-        if (savedRole === 'admin') {
-          this.router.navigateByUrl('/admin-dashboard', { replaceUrl: true });
-        } else {
-          this.router.navigateByUrl('/user-dashboard', { replaceUrl: true });
+        
+        // Verify role match for offline login
+        if (this.selectedRole === 'admin' && savedRole !== 'admin') {
+          alert('This is not an admin account');
+          return;
+        }
+        if (this.selectedRole === 'user' && savedRole === 'admin') {
+          alert('Admins cannot login as Users');
+          return;
         }
 
+        localStorage.setItem('loggedIn', 'true');
+        
+        if (savedRole === 'admin') {
+          this.router.navigate(['/admin-dashboard'], { replaceUrl: true });
+        } else {
+          this.router.navigate(['/user-dashboard'], { replaceUrl: true });
+        }
         return;
       } else {
-        alert('Offline login failed. First login must be online.');
+        alert('Offline login failed. First login must be online or credentials mismatch.');
         return;
       }
     }
 
-    /* 🟢 ONLINE LOGIN */
     this.auth.login(cleanUsername, cleanPassword).subscribe({
 
       next: (res: any) => {
 
-        console.log('LOGIN SUCCESS:', res);
-      
-        // ✅ FIX: KEEP ORIGINAL ROLE (important for AuthGuard)
-        let normalizedRole = res.role.toLowerCase();
-      
-        // ✅ SAVE SESSION
-        this.auth.saveSession(
-          res.token,
-          normalizedRole,
-          res.userId,
-          cleanUsername,
-          cleanPassword
-        );
-      
-        // ✅ NAVIGATE
-        if (normalizedRole === 'admin') {
-          this.router.navigateByUrl('/admin-dashboard', { replaceUrl: true });
-        } else {
-          this.router.navigateByUrl('/user-dashboard', { replaceUrl: true });
+        // ✅ ROLE CHECK
+        if (this.selectedRole === 'admin' && res.role !== 'admin') {
+          alert('This is not an admin account');
+          return;
         }
-      
-        // optional background fetch (keep if you want)
-        setTimeout(() => {
+
+        if (this.selectedRole === 'user' && res.role === 'admin') {
+          alert('Admins cannot login as Users');
+          return;
+        }
+
+        this.auth.saveSession(res.token, res.role, res.userId, cleanUsername, cleanPassword);
+
+        // ✅ PRE-FETCH ID DATA FOR OFFLINE USE (for regular users)
+        if (res.role === 'user') {
           this.http.get<any>(`${environment.apiUrl}/id/my-id`, {
             headers: { Authorization: `Bearer ${res.token}` }
           }).subscribe({
@@ -140,30 +156,39 @@ export class LoginPage {
               if (idRes.qrToken) {
                 localStorage.setItem('offlineQrToken', idRes.qrToken);
               }
-            }
+            },
+            error: (err: any) => console.log('Pre-fetch failed:', err)
           });
-        }, 1000);
+        }
 
-        this.username = '';
-        this.password = '';
-      
+        // ✅ NAVIGATION
+        if (res.role === 'admin') {
+          this.router.navigate(['/admin-dashboard'], { replaceUrl: true });
+        } 
+        else {
+          this.router.navigate(['/user-dashboard'], { replaceUrl: true });
+        }
+
       },
 
       error: (err) => {
-        console.log('LOGIN ERROR:', err);
 
         if (err.status === 403) {
-          alert('Your ID has been deactivated');
+          alert('Your ID has been deactivated by admin');
         }
+
         else if (err.status === 404) {
-          alert('Account not found');
+          alert('Your account has been deleted');
         }
+
         else if (err.status === 401) {
-          alert('Invalid credentials');
+          alert('Invalid username or password');
         }
+
         else {
-          alert('Server error');
+          alert('Server error. Please try again later');
         }
+
       }
 
     });
