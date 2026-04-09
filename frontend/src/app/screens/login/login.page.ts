@@ -100,27 +100,39 @@ export class LoginPage {
 
     /* HANDLE OFFLINE LOGIN */
     if (!navigator.onLine) {
+
+      // ✅ CHECK 12-HOUR VALIDITY
+      if (!this.auth.isCheckinValid()) {
+        alert('Offline session expired. Please login online again.');
+        return;
+      }
+    
       if (this.auth.verifyOffline(cleanUsername, cleanPassword)) {
+    
         const savedRole = localStorage.getItem('role') || 'user';
-        
-        // Verify role match for offline login
+    
+        // ✅ ROLE CHECK
         if (this.selectedRole === 'admin' && savedRole !== 'admin') {
           alert('This is not an admin account');
           return;
         }
+    
         if (this.selectedRole === 'user' && savedRole === 'admin') {
           alert('Admins cannot login as Users');
           return;
         }
-
+    
         localStorage.setItem('loggedIn', 'true');
-        
+    
+        // ✅ NAVIGATION
         if (savedRole === 'admin') {
           this.router.navigate(['/admin-dashboard'], { replaceUrl: true });
         } else {
           this.router.navigate(['/user-dashboard'], { replaceUrl: true });
         }
+    
         return;
+    
       } else {
         alert('Offline login failed. First login must be online or credentials mismatch.');
         return;
@@ -131,21 +143,35 @@ export class LoginPage {
 
       next: (res: any) => {
 
+        // ✅ NORMALIZE ROLE
+        let normalizedRole = res.role;
+      
+        if (res.role === 'Student' || res.role === 'Employee') {
+          normalizedRole = 'user';
+        }
+      
         // ✅ ROLE CHECK
-        if (this.selectedRole === 'admin' && res.role !== 'admin') {
+        if (this.selectedRole === 'admin' && normalizedRole !== 'admin') {
           alert('This is not an admin account');
           return;
         }
-
-        if (this.selectedRole === 'user' && res.role === 'admin') {
+      
+        if (this.selectedRole === 'user' && normalizedRole === 'admin') {
           alert('Admins cannot login as Users');
           return;
         }
-
-        this.auth.saveSession(res.token, res.role, res.userId, cleanUsername, cleanPassword);
-
-        // ✅ PRE-FETCH ID DATA FOR OFFLINE USE (for regular users)
-        if (res.role === 'user') {
+      
+        // ✅ SAVE SESSION
+        this.auth.saveSession(
+          res.token,
+          normalizedRole,
+          res.userId,
+          cleanUsername,
+          cleanPassword
+        );
+      
+        // ✅ PRE-FETCH ID DATA (FIXED CONDITION)
+        if (normalizedRole === 'user') {
           this.http.get<any>(`${environment.apiUrl}/id/my-id`, {
             headers: { Authorization: `Bearer ${res.token}` }
           }).subscribe({
@@ -157,18 +183,23 @@ export class LoginPage {
                 localStorage.setItem('offlineQrToken', idRes.qrToken);
               }
             },
-            error: (err: any) => console.log('Pre-fetch failed:', err)
+            error: (err: any) => {
+              console.log('Pre-fetch failed:', err);
+              alert('Warning: Offline ID may not be available');
+            }
           });
         }
-
+      
         // ✅ NAVIGATION
-        if (res.role === 'admin') {
+        if (normalizedRole === 'admin') {
           this.router.navigate(['/admin-dashboard'], { replaceUrl: true });
-        } 
-        else {
+        } else {
           this.router.navigate(['/user-dashboard'], { replaceUrl: true });
         }
-
+      
+        // ✅ CLEAR INPUTS
+        this.username = '';
+        this.password = '';
       },
 
       error: (err) => {
