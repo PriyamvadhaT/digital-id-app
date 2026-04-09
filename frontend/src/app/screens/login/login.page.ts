@@ -108,14 +108,10 @@ export class LoginPage {
       next: (res: any) => {
 
         console.log('LOGIN SUCCESS:', res);
-
-        // ✅ NORMALIZE ROLE
-        let normalizedRole = res.role;
-
-        if (res.role === 'Student' || res.role === 'Employee') {
-          normalizedRole = 'user';
-        }
-
+      
+        // ✅ FIX: KEEP ORIGINAL ROLE (important for AuthGuard)
+        let normalizedRole = res.role.toLowerCase();
+      
         // ✅ SAVE SESSION
         this.auth.saveSession(
           res.token,
@@ -124,36 +120,33 @@ export class LoginPage {
           cleanUsername,
           cleanPassword
         );
-
-        // ✅ IMMEDIATE NAVIGATION (IMPORTANT)
+      
+        // ✅ NAVIGATE
         if (normalizedRole === 'admin') {
           this.router.navigateByUrl('/admin-dashboard', { replaceUrl: true });
         } else {
           this.router.navigateByUrl('/user-dashboard', { replaceUrl: true });
         }
+      
+        // optional background fetch (keep if you want)
+        setTimeout(() => {
+          this.http.get<any>(`${environment.apiUrl}/id/my-id`, {
+            headers: { Authorization: `Bearer ${res.token}` }
+          }).subscribe({
+            next: (idRes: any) => {
+              if (idRes.idToken) {
+                localStorage.setItem('offlineIdToken', idRes.idToken);
+              }
+              if (idRes.qrToken) {
+                localStorage.setItem('offlineQrToken', idRes.qrToken);
+              }
+            }
+          });
+        }, 1000);
 
-        // ✅ BACKGROUND FETCH (NON-BLOCKING)
-        if (normalizedRole === 'user') {
-          setTimeout(() => {
-            this.http.get<any>(`${environment.apiUrl}/id/my-id`, {
-              headers: { Authorization: `Bearer ${res.token}` }
-            }).subscribe({
-              next: (idRes: any) => {
-                if (idRes.idToken) {
-                  localStorage.setItem('offlineIdToken', idRes.idToken);
-                }
-                if (idRes.qrToken) {
-                  localStorage.setItem('offlineQrToken', idRes.qrToken);
-                }
-              },
-              error: () => {}
-            });
-          }, 1000);
-        }
-
-        // clear fields
         this.username = '';
         this.password = '';
+      
       },
 
       error: (err) => {
