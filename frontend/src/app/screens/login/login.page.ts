@@ -169,32 +169,33 @@ export class LoginPage {
           cleanUsername,
           cleanPassword
         );
-      
-        // ✅ PRE-FETCH ID DATA (FIXED CONDITION)
-        if (normalizedRole === 'user') {
-          this.http.get<any>(`${environment.apiUrl}/id/my-id`, {
-            headers: { Authorization: `Bearer ${res.token}` }
-          }).subscribe({
-            next: (idRes: any) => {
-              if (idRes.idToken) {
-                localStorage.setItem('offlineIdToken', idRes.idToken);
-              }
-              if (idRes.qrToken) {
-                localStorage.setItem('offlineQrToken', idRes.qrToken);
-              }
-            },
-            error: (err: any) => {
-              console.log('Pre-fetch failed:', err);
-              alert('Warning: Offline ID may not be available');
-            }
-          });
-        }
-      
-        // ✅ NAVIGATION
+
+        // ✅ NAVIGATE FIRST (IMPORTANT FIX)
         if (normalizedRole === 'admin') {
           this.router.navigate(['/admin-dashboard'], { replaceUrl: true });
         } else {
           this.router.navigate(['/user-dashboard'], { replaceUrl: true });
+        }
+        
+        // ✅ THEN FETCH ID IN BACKGROUND (NO BLOCKING)
+        if (normalizedRole === 'user') {
+          setTimeout(() => {
+            this.http.get<any>(`${environment.apiUrl}/id/my-id`, {
+              headers: { Authorization: `Bearer ${res.token}` }
+            }).subscribe({
+              next: (idRes: any) => {
+                if (idRes.idToken) {
+                  localStorage.setItem('offlineIdToken', idRes.idToken);
+                }
+                if (idRes.qrToken) {
+                  localStorage.setItem('offlineQrToken', idRes.qrToken);
+                }
+              },
+              error: (err: any) => {
+                console.log('Pre-fetch failed:', err);
+              }
+            });
+          }, 1000); // small delay
         }
       
         // ✅ CLEAR INPUTS
