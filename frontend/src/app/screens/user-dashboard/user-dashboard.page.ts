@@ -48,33 +48,45 @@ export class UserDashboardPage {
       logOutOutline,
       cloudOfflineOutline
     });
-
   }
 
   ionViewWillEnter() {
 
-    // check login
+    // ✅ Check login
     if (!this.auth.isLoggedIn()) {
       this.router.navigate(['/login'], { replaceUrl: true });
       return;
     }
 
     this.isOffline = !navigator.onLine;
-    this.loadProfile();
 
+    // ✅ LOAD CACHED PROFILE FIRST (instant UI)
+    const cachedProfile = localStorage.getItem('offline_profile');
+    if (cachedProfile) {
+      try {
+        this.profile = JSON.parse(cachedProfile);
+      } catch (e) {
+        console.log('Invalid cached profile');
+      }
+    }
+
+    // ✅ FALLBACK PROFILE (prevents blank screen)
+    if (!this.profile) {
+      this.profile = { name: 'User' };
+    }
+
+    // ✅ LOAD FROM SERVER IN BACKGROUND (non-blocking)
+    setTimeout(() => {
+      this.loadProfile();
+    }, 1000);
   }
 
   loadProfile() {
     const token = localStorage.getItem('token');
-    
-    // 🟠 Offline Support: Load from cache first
-    const cachedProfile = localStorage.getItem('offline_profile');
-    if (cachedProfile) {
-      this.profile = JSON.parse(cachedProfile);
-    }
 
+    // ❌ DON'T REDIRECT if token missing immediately
     if (!token) {
-      this.router.navigate(['/login'], { replaceUrl: true });
+      console.log('No token, skipping profile fetch');
       return;
     }
 
@@ -84,14 +96,17 @@ export class UserDashboardPage {
       next: (res) => {
         this.role = res.role;
         this.profile = res.profile;
-        // 🟢 Cache for offline use
+
+        // ✅ CACHE FOR OFFLINE USE
         localStorage.setItem('offline_profile', JSON.stringify(res.profile));
+
+        // ✅ UPDATE SESSION TIME
         this.auth.updateLastCheckin();
       },
       error: (err) => {
         console.log("Profile load failed:", err);
-        // 🔴 ONLY logout if session is strictly expired (401/403)
-        // Network errors (0) are ignored so user stays in for offline access
+
+        // ❌ ONLY logout for real auth errors
         if (err.status === 401 || err.status === 403) {
           this.auth.logout();
           this.router.navigate(['/login'], { replaceUrl: true });
@@ -101,20 +116,15 @@ export class UserDashboardPage {
   }
 
   goToIdCard() {
-
     if (!this.profile) {
       alert('Profile still loading...');
       return;
     }
-
     this.router.navigate(['/id-card']);
-
   }
 
   goToChangePassword() {
-
     this.router.navigate(['/change-password']);
-
   }
 
   goToScan() {
@@ -122,10 +132,8 @@ export class UserDashboardPage {
   }
 
   logout() {
-
     this.auth.logout();
     this.router.navigate(['/login'], { replaceUrl: true });
-
   }
 
 }
