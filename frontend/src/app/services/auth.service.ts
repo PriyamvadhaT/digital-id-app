@@ -47,18 +47,22 @@ export class AuthService {
   }
 
   logout() {
-    // Keep offline credentials but clear session
     const offUser = localStorage.getItem('offline_user');
     const offPass = localStorage.getItem('offline_pass');
     const offIdToken = localStorage.getItem('offlineIdToken');
     const offQrToken = localStorage.getItem('offlineQrToken');
-
+    const offProfile = localStorage.getItem('offline_profile');
+    const role = localStorage.getItem('role'); // ⭐ IMPORTANT
+  
     localStorage.clear();
-
+  
+    // restore offline essentials
     if (offUser) localStorage.setItem('offline_user', offUser);
     if (offPass) localStorage.setItem('offline_pass', offPass);
     if (offIdToken) localStorage.setItem('offlineIdToken', offIdToken);
     if (offQrToken) localStorage.setItem('offlineQrToken', offQrToken);
+    if (offProfile) localStorage.setItem('offline_profile', offProfile);
+    if (role) localStorage.setItem('role', role); // ⭐ FIX
   }
 
   verifyOffline(username: string, password: string): boolean {
