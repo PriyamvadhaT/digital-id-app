@@ -14,10 +14,20 @@ export class LoginGuard implements CanActivate {
 
   canActivate(): boolean {
 
-    if (this.auth.isLoggedIn()) {
+    const loggedIn = this.auth.isLoggedIn();
+    const role = this.auth.getRole()?.toLowerCase();
+    const isOnline = navigator.onLine;
+    const token = localStorage.getItem('token');
 
-      const role = this.auth.getRole()?.toLowerCase();
+    // ✅ If already logged in
+    if (loggedIn) {
 
+      // ✅ Allow offline users even without token
+      if (!token && !isOnline) {
+        return false; // block login page
+      }
+
+      // 🔁 Redirect properly
       if (role === 'admin') {
         this.router.navigate(['/admin-dashboard'], { replaceUrl: true });
       } else {
@@ -28,7 +38,6 @@ export class LoginGuard implements CanActivate {
     }
 
     return true;
-
   }
 
 }
