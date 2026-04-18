@@ -31,36 +31,34 @@ export class SplashPage implements OnInit {
   ngOnInit() {
 
     const interval = setInterval(() => {
-
+  
       if (this.progress < 100) {
         this.progress += 5;
       }
-
+  
       if (this.progress >= 100) {
-
+  
         clearInterval(interval);
-
+  
         const loggedIn = this.auth.isLoggedIn();
-        const role = this.auth.getRole();
-
+        const role = this.auth.getRole()?.toLowerCase();
+  
         if (loggedIn) {
-
-          if (role === 'Admin') {
-            this.router.navigate(['/admin-dashboard']);
+  
+          if (role === 'admin') {
+            this.router.navigate(['/admin-dashboard'], { replaceUrl: true });
           } else {
-            this.router.navigate(['/user-dashboard']);
+            this.router.navigate(['/user-dashboard'], { replaceUrl: true });
           }
-
+  
         } else {
-
-          this.router.navigate(['/login']);
-
+          this.router.navigate(['/login'], { replaceUrl: true });
         }
-
+  
       }
-
+  
     }, 70);
-
+  
   }
 
 }
