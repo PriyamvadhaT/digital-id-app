@@ -34,7 +34,8 @@ export class AuthGuard implements CanActivate {
     // ✅ IMPORTANT FIX: allow offline users even without token
     const token = localStorage.getItem('token');
     if (!token && !isOnline) {
-      return true;
+      const hasOffline = localStorage.getItem('offline_user') && localStorage.getItem('offline_profile');
+      return !!hasOffline;
     }
 
     // 🔐 ROLE CHECK
