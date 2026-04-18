@@ -163,6 +163,16 @@ export class LoginPage {
           cleanUsername,
           cleanPassword
         );
+
+        // ⭐ CACHE PROFILE FOR OFFLINE DASHBOARD
+        this.http.get<any>(`${environment.apiUrl}/auth/me`, {
+          headers: { Authorization: `Bearer ${res.token}` }
+        }).subscribe({
+          next: (profileRes) => {
+            localStorage.setItem('offline_profile', JSON.stringify(profileRes.profile));
+          },
+          error: () => {}
+        });
   
         // ✅ FIX: allow ALL non-admin users
         if (res.role !== 'admin') {
