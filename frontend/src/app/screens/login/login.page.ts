@@ -92,18 +92,20 @@ export class LoginPage {
 
     const cleanUsername = this.username.trim().toLowerCase();
     const cleanPassword = this.password;
-
+  
     if (!cleanUsername || !cleanPassword) {
       alert('Enter username and password');
       return;
     }
-
-    /* HANDLE OFFLINE LOGIN */
+  
+    /* 🔵 OFFLINE LOGIN */
     if (!navigator.onLine) {
+  
       if (this.auth.verifyOffline(cleanUsername, cleanPassword)) {
+  
         const savedRole = localStorage.getItem('role') || 'user';
-        
-        // Verify role match for offline login
+  
+        // role validation
         if (this.selectedRole === 'admin' && savedRole !== 'admin') {
           alert('This is not an admin account');
           return;
@@ -112,40 +114,54 @@ export class LoginPage {
           alert('Admins cannot login as Users');
           return;
         }
-
+  
+        // ✅ Mark session as active
         localStorage.setItem('loggedIn', 'true');
-        
-        if (savedRole === 'admin') {
-          this.router.navigate(['/admin-dashboard'], { replaceUrl: true });
-        } else {
-          this.router.navigate(['/user-dashboard'], { replaceUrl: true });
-        }
+  
+        // ✅ update checkin time
+        this.auth.updateLastCheckin();
+  
+        // navigate
+        this.router.navigate(
+          savedRole === 'admin' ? ['/admin-dashboard'] : ['/user-dashboard'],
+          { replaceUrl: true }
+        );
+  
         return;
+  
       } else {
-        alert('Offline login failed. First login must be online or credentials mismatch.');
+        alert('Offline login failed. First login must be online.');
         return;
       }
     }
-
+  
+    /* 🟢 ONLINE LOGIN */
     this.auth.login(cleanUsername, cleanPassword).subscribe({
-
+  
       next: (res: any) => {
-
-        // ✅ ROLE CHECK
+  
+        // role validation
         if (this.selectedRole === 'admin' && res.role !== 'admin') {
           alert('This is not an admin account');
           return;
         }
-
+  
         if (this.selectedRole === 'user' && res.role === 'admin') {
           alert('Admins cannot login as Users');
           return;
         }
-
-        this.auth.saveSession(res.token, res.role, res.userId, cleanUsername, cleanPassword);
-
-        // ✅ PRE-FETCH ID DATA FOR OFFLINE USE (for regular users)
-        if (res.role === 'user') {
+  
+        // ✅ Save session
+        this.auth.saveSession(
+          res.token,
+          res.role.toLowerCase(),
+          res.userId,
+          cleanUsername,
+          cleanPassword
+        );
+  
+        // ✅ FIX: allow ALL non-admin users
+        if (res.role !== 'admin') {
           this.http.get<any>(`${environment.apiUrl}/id/my-id`, {
             headers: { Authorization: `Bearer ${res.token}` }
           }).subscribe({
@@ -157,42 +173,34 @@ export class LoginPage {
                 localStorage.setItem('offlineQrToken', idRes.qrToken);
               }
             },
-            error: (err: any) => console.log('Pre-fetch failed:', err)
+            error: () => {}
           });
         }
-
-        // ✅ NAVIGATION
-        if (res.role === 'admin') {
-          this.router.navigate(['/admin-dashboard'], { replaceUrl: true });
-        } 
-        else {
-          this.router.navigate(['/user-dashboard'], { replaceUrl: true });
-        }
-
+  
+        // navigate
+        this.router.navigate(
+          res.role === 'admin' ? ['/admin-dashboard'] : ['/user-dashboard'],
+          { replaceUrl: true }
+        );
+  
       },
-
+  
       error: (err) => {
-
+  
         if (err.status === 403) {
           alert('Your ID has been deactivated by admin');
-        }
-
-        else if (err.status === 404) {
+        } else if (err.status === 404) {
           alert('Your account has been deleted');
-        }
-
-        else if (err.status === 401) {
+        } else if (err.status === 401) {
           alert('Invalid username or password');
-        }
-
-        else {
+        } else {
           alert('Server error. Please try again later');
         }
-
+  
       }
-
+  
     });
-
+  
   }
 
   goToRegister() {
