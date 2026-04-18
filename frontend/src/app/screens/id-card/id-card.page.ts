@@ -90,13 +90,25 @@ export class IdCardPage {
     /* 1. TRY OFFLINE TOKEN FIRST (FOR INSTANT UI) */
     const savedToken = localStorage.getItem('offlineIdToken');
     const savedQrToken = localStorage.getItem('offlineQrToken');
+    
     if (savedToken) {
-      console.log("Loading offline token...");
-      this.profile = this.decodeToken(savedToken);
-      if (this.profile) {
-        this.role = this.profile.role;
-        this.qrValue = savedQrToken || ''; // Use lightweight QR token
-        // We still continue to fetch online to sync latest data
+      try {
+        console.log("✅ Loading offline ID...");
+    
+        const decoded = this.decodeToken(savedToken);
+    
+        if (decoded) {
+          this.profile = decoded;
+          this.role = decoded.role || 'user';
+          this.qrValue = savedQrToken || savedToken;
+    
+          this.isLoading = false; // ⭐ STOP LOADING
+        } else {
+          console.log("❌ Decode failed");
+        }
+    
+      } catch (e) {
+        console.log("❌ Offline load error", e);
       }
     }
 
