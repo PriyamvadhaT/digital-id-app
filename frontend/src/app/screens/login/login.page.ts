@@ -103,7 +103,11 @@ export class LoginPage {
   
       if (this.auth.verifyOffline(cleanUsername, cleanPassword)) {
   
-        const savedRole = localStorage.getItem('role') || 'user';
+        const savedRole = localStorage.getItem('role');
+        if (!savedRole) {
+          alert('Offline data missing. Please login once online.');
+          return;
+        }
   
         // role validation
         if (this.selectedRole === 'admin' && savedRole !== 'admin') {
