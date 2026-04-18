@@ -14,14 +14,14 @@
 
 <ion-content class="page-bg">
 
-  <!-- LOADING STATE -->
-  <div class="status-container" *ngIf="isLoading">
+  <!-- ✅ LOADING ONLY IF NO PROFILE -->
+  <div class="status-container" *ngIf="isLoading && !profile">
     <ion-spinner name="crescent" color="primary"></ion-spinner>
     <p>Authenticating Digital ID...</p>
   </div>
 
-  <!-- ERROR STATE -->
-  <div class="status-container" *ngIf="!isLoading && errorMessage">
+  <!-- ✅ ERROR ONLY IF NO PROFILE -->
+  <div class="status-container" *ngIf="!isLoading && errorMessage && !profile">
     <div class="error-box">
       <ion-icon name="alert-circle-outline" color="danger"></ion-icon>
       <h3>Sync Failed</h3>
@@ -32,68 +32,91 @@
     </div>
   </div>
 
-  <!-- ID CARD DISPLAY -->
-  <div class="id-wrapper" *ngIf="!isLoading && profile">
+  <!-- ✅ ID ALWAYS SHOW IF PROFILE EXISTS -->
+  <div class="id-wrapper" *ngIf="profile">
+
+    <!-- Optional Offline Badge -->
+    <p *ngIf="!navigator.onLine" style="text-align:center; color:#f59e0b; margin-bottom:10px;">
+      Viewing Offline ID
+    </p>
+
     <div class="id-card card-ripple" id="id-card-to-export">
-      <!-- Decorative Background Elements -->
+
+      <!-- Decorative Background -->
       <div class="card-bg-glow"></div>
       <div class="card-pattern"></div>
       <div class="card-glint"></div>
 
-      <!-- Header Section -->
+      <!-- HEADER -->
       <div class="card-header">
         <div class="avatar-frame">
           <div class="avatar-main">
-            <img *ngIf="profile.photo" [src]="'data:image/jpeg;base64,' + profile.photo" alt="Profile" class="profile-img">
-            <span *ngIf="!profile.photo">{{ profile.name?.charAt(0) }}</span>
+            <img *ngIf="profile.photo"
+                 [src]="'data:image/jpeg;base64,' + profile.photo"
+                 class="profile-img">
+            <span *ngIf="!profile.photo">
+              {{ profile.name?.charAt(0) }}
+            </span>
           </div>
           <div class="avatar-ring"></div>
           <div class="verified-seal">
             <ion-icon name="shield-checkmark-outline"></ion-icon>
           </div>
         </div>
-        
+
         <div class="user-identity">
           <h2>{{ profile.name }}</h2>
           <p class="user-id">ID: {{ profile.id }}</p>
-          <div class="role-badge" [class.student]="role === 'Student'" [class.employee]="role === 'Employee'">
+
+          <div class="role-badge"
+               [class.student]="role === 'Student'"
+               [class.employee]="role === 'Employee'">
             {{ role }}
           </div>
         </div>
       </div>
 
-      <!-- Core Details Tray -->
+      <!-- DETAILS -->
       <div class="details-tray">
+
         <div class="detail-item">
           <span class="label">Department</span>
           <span class="value">{{ profile.department }}</span>
         </div>
-        
+
         <div class="detail-row" *ngIf="profile.batch || profile.course">
+
           <div class="detail-item" *ngIf="profile.batch">
             <span class="label">Batch</span>
             <span class="value">{{ profile.batch }}</span>
           </div>
+
           <div class="detail-item" *ngIf="profile.course">
             <span class="label">Course</span>
             <span class="value">{{ profile.course }}</span>
           </div>
+
         </div>
 
         <div class="detail-row">
+
           <div class="detail-item">
             <span class="label">Mobile</span>
             <span class="value">{{ profile.mobile }}</span>
           </div>
+
           <div class="detail-item" *ngIf="profile.parentMobile">
             <span class="label">Parent Contact</span>
             <span class="value">{{ profile.parentMobile }}</span>
           </div>
+
         </div>
+
       </div>
 
-      <!-- Authenticator QR -->
+      <!-- QR SECTION -->
       <div class="qr-verify-section" *ngIf="qrValue">
+
         <div class="qr-container">
           <qrcode
             [qrdata]="qrValue"
@@ -102,21 +125,28 @@
             [colorDark]="'#000000'"
             [errorCorrectionLevel]="'L'">
           </qrcode>
+
           <div class="qr-corners">
             <span></span><span></span><span></span><span></span>
           </div>
         </div>
+
         <p class="verify-instruction">SCAN TO VERIFY IDENTITY</p>
-      </div>
-      <div class="qr-verify-section" *ngIf="!qrValue">
-        <p class="verify-instruction" style="color:#94a3b8;">Syncing QR Code...</p>
+
       </div>
 
-      <!-- Branding / Footer -->
+      <div class="qr-verify-section" *ngIf="!qrValue">
+        <p class="verify-instruction" style="color:#94a3b8;">
+          Syncing QR Code...
+        </p>
+      </div>
+
+      <!-- FOOTER -->
       <div class="card-footer">
         <div class="logo-text">DIGITAL ID PORTAL</div>
         <div class="security-chip"></div>
       </div>
+
     </div>
   </div>
 
