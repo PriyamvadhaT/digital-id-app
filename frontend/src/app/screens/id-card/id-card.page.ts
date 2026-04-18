@@ -71,88 +71,97 @@ export class IdCardPage {
   }
 
   loadId() {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      this.router.navigate(['/login']);
-      return;
-    }
-
-    // 🔒 Safety Check: Expiry check for offline users
-    if (!navigator.onLine && !this.auth.isCheckinValid()) {
-      this.errorMessage = 'Security Check Required: Please connect to the internet to verify your ID status.';
-      this.isLoading = false;
-      return;
-    }
 
     this.isLoading = true;
     this.errorMessage = '';
 
-    /* 1. TRY OFFLINE TOKEN FIRST (FOR INSTANT UI) */
+    const token = localStorage.getItem('token');
     const savedToken = localStorage.getItem('offlineIdToken');
     const savedQrToken = localStorage.getItem('offlineQrToken');
-    
+
+    // 🔐 SECURITY CHECK
+    if (!navigator.onLine && !this.auth.isCheckinValid()) {
+      this.isLoading = false;
+      this.errorMessage = 'Please connect to internet for security verification.';
+      return;
+    }
+
+    /* ✅ STEP 1: LOAD OFFLINE DATA FIRST */
     if (savedToken) {
       try {
-        console.log("✅ Loading offline ID...");
-    
         const decoded = this.decodeToken(savedToken);
-    
+
         if (decoded) {
           this.profile = decoded;
           this.role = decoded.role || 'user';
           this.qrValue = savedQrToken || savedToken;
-    
-          this.isLoading = false; // ⭐ STOP LOADING
-        } else {
-          console.log("❌ Decode failed");
+
+          console.log("✅ Offline ID loaded");
+
+          this.isLoading = false;
+
+          // 🔥 IMPORTANT: stop here if offline
+          if (!navigator.onLine) return;
         }
-    
+
       } catch (e) {
-        console.log("❌ Offline load error", e);
+        console.log("❌ Offline decode failed", e);
       }
     }
 
-    /* 2. SYNC WITH SERVER */
-    if (navigator.onLine) {
-      this.http.get<any>(`${environment.apiUrl}/id/my-id`, {
-        headers: { Authorization: `Bearer ${token}` }
-      }).subscribe({
-        next: (res) => {
-          this.isLoading = false;
-          if (!res.idToken) {
-            if (!this.profile) this.errorMessage = 'No ID data found on server.';
-            return;
-          }
-
-          localStorage.setItem('offlineIdToken', res.idToken);
-          if (res.qrToken) {
-            localStorage.setItem('offlineQrToken', res.qrToken);
-            this.qrValue = res.qrToken; // ✅ Use lightweight QR token (no photo)
-          }
-          const newProfile = this.decodeToken(res.idToken);
-          
-          if (newProfile) {
-            this.profile = newProfile;
-            this.role = this.profile.role;
-          } else if (!this.profile) {
-            this.errorMessage = 'Failed to process Digital ID payload.';
-          }
-        },
-        error: (err) => {
-          this.isLoading = false;
-          console.error("Sync Error:", err);
-          if (!this.profile) {
-            this.errorMessage = 'Unable to connect to server. Please check your connection.';
-          }
-        }
-      });
-    } else {
+    /* ❌ OFFLINE WITHOUT DATA */
+    if (!navigator.onLine) {
       this.isLoading = false;
-      
+
       if (!this.profile) {
         this.errorMessage = 'No offline ID found. Please login once online.';
       }
+
+      return;
     }
+
+    /* 🌐 ONLINE FETCH */
+    if (!token) {
+      this.isLoading = false;
+      this.errorMessage = 'Session expired. Please login again.';
+      return;
+    }
+
+    this.http.get<any>(`${environment.apiUrl}/id/my-id`, {
+      headers: { Authorization: `Bearer ${token}` }
+    }).subscribe({
+
+      next: (res) => {
+
+        this.isLoading = false;
+
+        if (res.idToken) {
+
+          localStorage.setItem('offlineIdToken', res.idToken);
+
+          if (res.qrToken) {
+            localStorage.setItem('offlineQrToken', res.qrToken);
+            this.qrValue = res.qrToken;
+          }
+
+          const decoded = this.decodeToken(res.idToken);
+
+          if (decoded) {
+            this.profile = decoded;
+            this.role = decoded.role;
+          }
+        }
+      },
+
+      error: () => {
+        this.isLoading = false;
+
+        if (!this.profile) {
+          this.errorMessage = 'Failed to load ID from server.';
+        }
+      }
+
+    });
   }
 
   decodeToken(token: string) {
@@ -162,16 +171,23 @@ export class IdCardPage {
 
       const base64Url = parts[1];
       const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-      const jsonPayload = decodeURIComponent(atob(base64).split('').map((c) => {
-        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-      }).join(''));
+
+      const jsonPayload = decodeURIComponent(
+        atob(base64)
+          .split('')
+          .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+          .join('')
+      );
 
       return JSON.parse(jsonPayload);
+
     } catch (e) {
       console.error("JWT Decode Error:", e);
       return null;
     }
   }
+
+}
 
   generateQR() {
     // qrValue is now set directly when token is received — no-op kept for safety
