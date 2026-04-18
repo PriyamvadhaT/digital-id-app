@@ -148,8 +148,9 @@ export class IdCardPage {
       });
     } else {
       this.isLoading = false;
+      
       if (!this.profile) {
-        this.errorMessage = 'You are offline and no local ID was found.';
+        this.errorMessage = 'No offline ID found. Please login once online.';
       }
     }
   }
