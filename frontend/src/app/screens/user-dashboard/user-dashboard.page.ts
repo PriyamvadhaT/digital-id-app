@@ -116,10 +116,6 @@ export class UserDashboardPage {
   }
 
   goToIdCard() {
-    if (!this.profile) {
-      alert('Profile still loading...');
-      return;
-    }
     this.router.navigate(['/id-card']);
   }
 
