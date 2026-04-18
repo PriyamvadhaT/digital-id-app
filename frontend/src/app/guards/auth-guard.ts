@@ -18,40 +18,38 @@ export class AuthGuard implements CanActivate {
     const userRole = this.auth.getRole()?.toLowerCase(); // admin, student, employee
     const isOnline = navigator.onLine;
 
-    // 🔒 Safety Check: If offline and last check-in was > 24 hours ago, block access
+    // 🔒 SECURITY: block if offline and check-in expired
     if (!isOnline && !this.auth.isCheckinValid()) {
-      alert('Security Check Required: Please connect to the internet to verify your ID status.');
+      alert('Security Check Required: Please connect to the internet.');
       this.router.navigate(['/login'], { replaceUrl: true });
       return false;
     }
 
+    // ❌ NOT LOGGED IN
     if (!loggedIn) {
       this.router.navigate(['/login'], { replaceUrl: true });
       return false;
     }
 
-    // Role Check
-    const expectedRole = route.data['role']; // e.g. 'admin' or ['student', 'employee']
+    // ✅ IMPORTANT FIX: allow offline users even without token
+    const token = localStorage.getItem('token');
+    if (!token && !isOnline) {
+      return true;
+    }
+
+    // 🔐 ROLE CHECK
+    const expectedRole = route.data['role'];
 
     if (expectedRole) {
 
-      const hasRole = Array.isArray(expectedRole) 
-        ? expectedRole.includes(userRole) 
+      const hasRole = Array.isArray(expectedRole)
+        ? expectedRole.includes(userRole)
         : userRole === expectedRole;
 
-        if (!hasRole) {
-          const currentUrl = this.router.url;
-          const targetDashboard = (userRole === 'admin') ? '/admin-dashboard' : '/user-dashboard';
-
-          if (currentUrl !== targetDashboard) {
-            this.router.navigate([targetDashboard], { replaceUrl: true });
-          } else {
-            // If already on the target but role still mismatched, fallback to login
-            this.auth.logout();
-            this.router.navigate(['/login'], { replaceUrl: true });
-          }
-          return false;
-        }
+      if (!hasRole) {
+        this.router.navigate(['/login'], { replaceUrl: true });
+        return false;
+      }
     }
 
     return true;
