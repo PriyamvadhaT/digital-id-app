@@ -34,6 +34,17 @@ export class UserDashboardPage {
   role = '';
   isOffline = !navigator.onLine;
 
+  onlineHandler = () => {
+    console.log("🌐 Back Online → syncing profile...");
+    this.isOffline = false;
+    this.loadProfile(); // 🔥 auto sync
+  };
+  
+  offlineHandler = () => {
+    console.log("📴 You are offline");
+    this.isOffline = true;
+  };
+
   constructor(
     private router: Router,
     private auth: AuthService,
@@ -51,6 +62,11 @@ export class UserDashboardPage {
   }
 
   ionViewWillEnter() {
+
+    this.isOffline = !navigator.onLine;
+
+    window.addEventListener('online', this.onlineHandler);
+    window.addEventListener('offline', this.offlineHandler);
 
     // ✅ Check login
     if (!this.auth.isLoggedIn()) {
@@ -138,6 +154,11 @@ export class UserDashboardPage {
   logout() {
     this.auth.logout();
     this.router.navigate(['/login'], { replaceUrl: true });
+  }
+
+  ionViewWillLeave() {
+    window.removeEventListener('online', this.onlineHandler);
+    window.removeEventListener('offline', this.offlineHandler);
   }
 
 }
