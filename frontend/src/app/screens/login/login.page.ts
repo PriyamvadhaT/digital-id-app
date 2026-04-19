@@ -184,12 +184,15 @@ export class LoginPage {
         if (err.status === 403 || msg.toLowerCase().includes('deactivated')) {
           alert('Your account has been deactivated by admin');
         } 
-        else if (err.status === 404) {
-          alert('Your account has been deleted');
-        } 
         else if (err.status === 401) {
           alert('Invalid username or password');
         } 
+        else if (err.status === 404) {
+          alert('Account not found');
+        } 
+        else if (err.status === 504) {
+          alert('Server is waking up, please try again in a few seconds');
+        }
         else {
           alert(msg || 'Server error. Please try again later');
         }
