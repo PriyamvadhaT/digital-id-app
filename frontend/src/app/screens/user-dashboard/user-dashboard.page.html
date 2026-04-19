@@ -14,13 +14,6 @@
         <div class="status-ring"></div>
       </div>
 
-      <ng-template #loadingProfile>
-        <div style="text-align:center; padding:40px;">
-          <ion-spinner></ion-spinner>
-          <p>Loading profile...</p>
-        </div>
-      </ng-template>
-
       <div class="user-info">
         <h2>{{ profile.name }}</h2>
         <div class="header-badges">
@@ -32,6 +25,13 @@
         </div>
       </div>
     </div>
+
+    <ng-template #loadingProfile>
+      <div style="text-align:center; padding:40px;">
+        <ion-spinner></ion-spinner>
+        <p>Loading profile...</p>
+      </div>
+    </ng-template>
 
     <!-- Action Grid -->
     <div class="actions-grid">
