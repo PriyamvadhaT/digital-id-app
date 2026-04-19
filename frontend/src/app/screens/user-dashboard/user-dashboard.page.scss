@@ -78,28 +78,25 @@
   .offline-badge {
     display: inline-flex;
     align-items: center;
-    gap: 4px;
+    gap: 6px;
   
     padding: 6px 14px;
     border-radius: 100px;
   
-    background: #dc2626; /* darker red */
-    color: #ffffff;
+    background: #dc2626 !important;  // 🔥 force solid red
+    color: #ffffff !important;
   
-    font-size: 10px;
+    font-size: 11px;
     font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 0.5px;
   
-    border: 1px solid rgba(255,255,255,0.2);
+    border: none !important;
+    backdrop-filter: none !important; // ❌ remove glass effect
+    box-shadow: 0 4px 12px rgba(0,0,0,0.25);
   
-    box-shadow: 0 6px 15px rgba(0,0,0,0.35);
-  
-    position: relative;
-    z-index: 5;
-  
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
+    ion-icon {
+      font-size: 14px;
+    }
   }
 }
 
