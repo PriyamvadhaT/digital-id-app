@@ -79,6 +79,12 @@ export class IdCardPage {
     const savedToken = localStorage.getItem('offlineIdToken');
     const savedQrToken = localStorage.getItem('offlineQrToken');
 
+    /* ✅ ALLOW OFFLINE ACCESS EVEN WITHOUT TOKEN */
+    if (!token && !savedToken) {
+      this.router.navigate(['/login']);
+      return;
+    }
+
     // 🔐 SECURITY CHECK
     if (!navigator.onLine && !this.auth.isCheckinValid()) {
       this.isLoading = false;
@@ -121,7 +127,7 @@ export class IdCardPage {
     }
 
     /* 🌐 ONLINE FETCH */
-    if (!token) {
+    if (!token && navigator.onLine) {
       this.isLoading = false;
       this.errorMessage = 'Session expired. Please login again.';
       return;
