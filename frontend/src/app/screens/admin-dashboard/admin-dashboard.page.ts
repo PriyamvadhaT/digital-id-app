@@ -42,6 +42,17 @@ export class AdminDashboardPage {
   scanCount = 0;
   isOffline = !navigator.onLine;
 
+  onlineHandler = () => {
+    console.log("🌐 Back Online → syncing stats...");
+    this.isOffline = false;
+    this.loadStats(); // 🔥 auto sync
+  };
+  
+  offlineHandler = () => {
+    console.log("📴 You are offline");
+    this.isOffline = true;
+  };
+
   constructor(
     private router: Router,
     private auth: AuthService,
@@ -62,6 +73,10 @@ export class AdminDashboardPage {
   }
 
   ionViewWillEnter() {
+    this.isOffline = !navigator.onLine;
+
+    window.addEventListener('online', this.onlineHandler);
+    window.addEventListener('offline', this.offlineHandler);
     this.isOffline = !navigator.onLine;
     this.loadStats();
   }
@@ -130,6 +145,11 @@ export class AdminDashboardPage {
   logout() {
     this.auth.logout();
     this.router.navigate(['/login']);
+  }
+
+  ionViewWillLeave() {
+    window.removeEventListener('online', this.onlineHandler);
+    window.removeEventListener('offline', this.offlineHandler);
   }
 
 }
