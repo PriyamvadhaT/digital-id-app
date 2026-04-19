@@ -104,57 +104,23 @@ export class LoginPage {
       if (this.auth.verifyOffline(cleanUsername, cleanPassword)) {
   
         const savedRole = localStorage.getItem('role');
+  
         if (!savedRole) {
           alert('Offline data missing. Please login once online.');
           return;
         }
   
-        // role validation
-        if (this.selectedRole === 'admin' && savedRole !== 'admin') {
-          alert('This is not an admin account');
-          return;
-        }
-        if (this.selectedRole === 'user' && savedRole === 'admin') {
-          alert('Admins cannot login as Users');
-          return;
-        }
-  
-        // ✅ Mark session as active
         localStorage.setItem('loggedIn', 'true');
-  
-        // ✅ update checkin time
         this.auth.updateLastCheckin();
   
-        // ⭐ FIRST fetch profile, THEN navigate
-        this.http.get<any>(`${environment.apiUrl}/auth/me`, {
-          headers: { Authorization: `Bearer ${res.token}` }
-        }).subscribe({
-          next: (profileRes) => {
-        
-            // ✅ Save profile BEFORE navigation
-            localStorage.setItem('offline_profile', JSON.stringify(profileRes.profile));
-        
-            console.log("✅ Profile cached before navigation");
-        
-            // ✅ NOW navigate
-            this.router.navigate(
-              res.role === 'admin' ? ['/admin-dashboard'] : ['/user-dashboard'],
-              { replaceUrl: true }
-            );
-          },
-          error: () => {
-            // fallback navigation if profile fails
-            this.router.navigate(
-              res.role === 'admin' ? ['/admin-dashboard'] : ['/user-dashboard'],
-              { replaceUrl: true }
-            );
-          }
-        });
+        this.router.navigate(
+          savedRole === 'admin' ? ['/admin-dashboard'] : ['/user-dashboard'],
+          { replaceUrl: true }
+        );
   
         return;
-  
       } else {
-        alert('Offline login failed. First login must be online.');
+        alert('Offline login failed.');
         return;
       }
     }
@@ -163,17 +129,6 @@ export class LoginPage {
     this.auth.login(cleanUsername, cleanPassword).subscribe({
   
       next: (res: any) => {
-  
-        // role validation
-        if (this.selectedRole === 'admin' && res.role !== 'admin') {
-          alert('This is not an admin account');
-          return;
-        }
-  
-        if (this.selectedRole === 'user' && res.role === 'admin') {
-          alert('Admins cannot login as Users');
-          return;
-        }
   
         // ✅ Save session
         this.auth.saveSession(
@@ -184,53 +139,47 @@ export class LoginPage {
           cleanPassword
         );
   
-        // ✅ FIX: allow ALL non-admin users
-        if (res.role !== 'admin') {
-          this.http.get<any>(`${environment.apiUrl}/id/my-id`, {
-            headers: { Authorization: `Bearer ${res.token}` }
-          }).subscribe({
-            next: (idRes: any) => {
-        
-              console.log("ID API RESPONSE:", idRes);
-        
-              if (idRes.idToken) {
-                localStorage.setItem('offlineIdToken', idRes.idToken);
-                console.log("offlineIdToken saved");
-              } else {
-                console.log("idToken missing!");
-              }
-        
-              if (idRes.qrToken) {
-                localStorage.setItem('offlineQrToken', idRes.qrToken);
-              }
-        
-            },
-            error: (err) => {
-              console.log("ID fetch failed", err);
-            }
-          });
-        }
+        // ⭐ FIX: Fetch profile BEFORE navigation
+        this.http.get<any>(`${environment.apiUrl}/auth/me`, {
+          headers: { Authorization: `Bearer ${res.token}` }
+        }).subscribe({
   
-        // navigate
-        this.router.navigate(
-          res.role === 'admin' ? ['/admin-dashboard'] : ['/user-dashboard'],
-          { replaceUrl: true }
-        );
+          next: (profileRes) => {
+  
+            // ✅ Save profile
+            localStorage.setItem(
+              'offline_profile',
+              JSON.stringify(profileRes.profile)
+            );
+  
+            console.log("✅ Profile saved before navigation");
+  
+            // ✅ NOW navigate
+            this.router.navigate(
+              res.role === 'admin'
+                ? ['/admin-dashboard']
+                : ['/user-dashboard'],
+              { replaceUrl: true }
+            );
+          },
+  
+          error: () => {
+            // fallback navigation
+            this.router.navigate(
+              res.role === 'admin'
+                ? ['/admin-dashboard']
+                : ['/user-dashboard'],
+              { replaceUrl: true }
+            );
+          }
+  
+        });
   
       },
   
       error: (err) => {
-  
-        if (err.status === 403) {
-          alert('Your ID has been deactivated by admin');
-        } else if (err.status === 404) {
-          alert('Your account has been deleted');
-        } else if (err.status === 401) {
-          alert('Invalid username or password');
-        } else {
-          alert('Server error. Please try again later');
-        }
-  
+        if (err.status === 401) alert('Invalid credentials');
+        else alert('Server error');
       }
   
     });
