@@ -68,6 +68,10 @@ export class UserDashboardPage {
 
     window.addEventListener('online', this.onlineHandler);
     window.addEventListener('offline', this.offlineHandler);
+    const savedRole = localStorage.getItem('role');
+    if (savedRole) {
+      this.role = savedRole.toLowerCase(); // ✅ fix case issue
+    }
 
     // ✅ Check login
     if (!this.auth.isLoggedIn()) {
@@ -129,7 +133,7 @@ export class UserDashboardPage {
       
           console.log("🔄 Profile updated from server");
       
-          this.role = res.role;
+          this.role = res.role?.toLowerCase();
           this.profile = res.profile;
       
           localStorage.setItem('offline_profile', newProfile);
