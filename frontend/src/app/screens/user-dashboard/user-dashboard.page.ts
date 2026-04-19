@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
-import { IonContent, IonIcon } from '@ionic/angular/standalone';
+import { IonContent, IonIcon, IonSpinner } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { 
   idCardOutline, 
@@ -25,7 +25,8 @@ import { environment } from '../../../environments/environment';
   imports: [
     CommonModule,
     IonContent,
-    IonIcon
+    IonIcon,
+    IonSpinner
   ]
 })
 export class UserDashboardPage {
