@@ -178,8 +178,22 @@ export class LoginPage {
       },
   
       error: (err) => {
-        if (err.status === 401) alert('Invalid credentials');
-        else alert('Server error');
+
+        const msg = err?.error?.message || '';
+      
+        if (err.status === 403 || msg.toLowerCase().includes('deactivated')) {
+          alert('Your account has been deactivated by admin');
+        } 
+        else if (err.status === 404) {
+          alert('Your account has been deleted');
+        } 
+        else if (err.status === 401) {
+          alert('Invalid username or password');
+        } 
+        else {
+          alert(msg || 'Server error. Please try again later');
+        }
+      
       }
   
     });
