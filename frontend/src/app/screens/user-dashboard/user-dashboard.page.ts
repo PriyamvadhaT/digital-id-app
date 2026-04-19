@@ -131,6 +131,7 @@ export class UserDashboardPage {
           this.profile = res.profile;
       
           localStorage.setItem('offline_profile', newProfile);
+          window.dispatchEvent(new Event('dataUpdated'));
       
         } else {
           console.log("✅ Profile already up-to-date (no sync needed)");
