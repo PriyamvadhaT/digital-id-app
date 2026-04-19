@@ -67,6 +67,12 @@ export class AdminDashboardPage {
   }
 
   loadStats() {
+
+    if (!navigator.onLine) {
+      console.log("🚫 Offline → skipping stats fetch");
+      return;
+    }
+    
     // 🟠 Offline Support: Load from cache first
     const cachedStats = localStorage.getItem('offline_admin_stats');
     if (cachedStats) {
