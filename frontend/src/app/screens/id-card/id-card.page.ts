@@ -193,15 +193,11 @@ export class IdCardPage {
     }
   }
 
-}
-
   generateQR() {
     // qrValue is now set directly when token is received — no-op kept for safety
     if (!this.qrValue) {
       this.qrValue = localStorage.getItem('offlineIdToken') || '';
     }
   }
-
-
 
 }
