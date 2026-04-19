@@ -55,8 +55,31 @@ export class IdCardPage {
   isOffline = !navigator.onLine;
 
   dataUpdateHandler = () => {
-    console.log("🔄 Data updated → refreshing ID card");
+    console.log("🔄 Smart refresh → updating UI without reload");
+  
+    const savedToken = localStorage.getItem('offlineIdToken');
+    const savedQrToken = localStorage.getItem('offlineQrToken');
+  
+    if (savedToken) {
+      const decoded = this.decodeToken(savedToken);
+  
+      if (decoded) {
+        this.profile = decoded;
+        this.role = decoded.role || 'user';
+        this.qrValue = savedQrToken || savedToken;
+      }
+    }
+  };
+
+  onlineHandler = () => {
+    console.log("🌐 Online → syncing ID");
+    this.isOffline = false;
     this.loadId();
+  };
+  
+  offlineHandler = () => {
+    console.log("📴 Offline");
+    this.isOffline = true;
   };
 
   constructor(
@@ -74,8 +97,10 @@ export class IdCardPage {
 
   ionViewWillEnter() {
     this.isOffline = !navigator.onLine;
+
+    window.addEventListener('online', this.onlineHandler);
+    window.addEventListener('offline', this.offlineHandler);
   
-    // ⭐ ADD THIS
     window.addEventListener('dataUpdated', this.dataUpdateHandler);
   
     this.loadId();
@@ -212,6 +237,8 @@ export class IdCardPage {
   }
 
   ionViewWillLeave() {
+    window.removeEventListener('online', this.onlineHandler);
+    window.removeEventListener('offline', this.offlineHandler);
     window.removeEventListener('dataUpdated', this.dataUpdateHandler);
   }
 
