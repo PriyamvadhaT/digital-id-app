@@ -36,7 +36,7 @@
   <div class="id-wrapper" *ngIf="profile">
 
     <!-- Optional Offline Badge -->
-    <p *ngIf="!navigator.onLine" style="text-align:center; color:#f59e0b; margin-bottom:10px;">
+    <p *ngIf="isOffline" style="text-align:center; color:#f59e0b; margin-bottom:10px;">
       Viewing Offline ID
     </p>
 
