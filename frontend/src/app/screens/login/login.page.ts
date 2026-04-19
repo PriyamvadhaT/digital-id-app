@@ -180,14 +180,24 @@ export class LoginPage {
             headers: { Authorization: `Bearer ${res.token}` }
           }).subscribe({
             next: (idRes: any) => {
+        
+              console.log("ID API RESPONSE:", idRes);
+        
               if (idRes.idToken) {
                 localStorage.setItem('offlineIdToken', idRes.idToken);
+                console.log("offlineIdToken saved");
+              } else {
+                console.log("idToken missing!");
               }
+        
               if (idRes.qrToken) {
                 localStorage.setItem('offlineQrToken', idRes.qrToken);
               }
+        
             },
-            error: () => {}
+            error: (err) => {
+              console.log("ID fetch failed", err);
+            }
           });
         }
   
