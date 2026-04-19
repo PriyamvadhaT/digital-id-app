@@ -52,6 +52,7 @@ export class IdCardPage {
   qrValue = '';
   isLoading = false;
   errorMessage = '';
+  isOffline = !navigator.onLine;
 
   constructor(
     private http: HttpClient,
@@ -67,6 +68,7 @@ export class IdCardPage {
   }
 
   ionViewWillEnter() {
+    this.isOffline = !navigator.onLine;
     this.loadId();
   }
 
