@@ -7,4 +7,23 @@ import { IonApp, IonRouterOutlet } from '@ionic/angular/standalone';
   standalone: true,
   imports: [IonApp, IonRouterOutlet],
 })
-export class AppComponent {}
+export class AppComponent {
+
+  constructor() {
+
+    // 🌐 When internet returns
+    window.addEventListener('online', () => {
+      console.log('🌐 Online - syncing app');
+
+      // trigger global refresh
+      window.dispatchEvent(new Event('dataUpdated'));
+    });
+
+    // 📡 When offline
+    window.addEventListener('offline', () => {
+      console.log('📴 Offline mode active');
+    });
+
+  }
+
+}g
