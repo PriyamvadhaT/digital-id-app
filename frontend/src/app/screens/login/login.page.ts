@@ -125,11 +125,31 @@ export class LoginPage {
         // ✅ update checkin time
         this.auth.updateLastCheckin();
   
-        // navigate
-        this.router.navigate(
-          savedRole === 'admin' ? ['/admin-dashboard'] : ['/user-dashboard'],
-          { replaceUrl: true }
-        );
+        // ⭐ FIRST fetch profile, THEN navigate
+        this.http.get<any>(`${environment.apiUrl}/auth/me`, {
+          headers: { Authorization: `Bearer ${res.token}` }
+        }).subscribe({
+          next: (profileRes) => {
+        
+            // ✅ Save profile BEFORE navigation
+            localStorage.setItem('offline_profile', JSON.stringify(profileRes.profile));
+        
+            console.log("✅ Profile cached before navigation");
+        
+            // ✅ NOW navigate
+            this.router.navigate(
+              res.role === 'admin' ? ['/admin-dashboard'] : ['/user-dashboard'],
+              { replaceUrl: true }
+            );
+          },
+          error: () => {
+            // fallback navigation if profile fails
+            this.router.navigate(
+              res.role === 'admin' ? ['/admin-dashboard'] : ['/user-dashboard'],
+              { replaceUrl: true }
+            );
+          }
+        });
   
         return;
   
@@ -163,16 +183,6 @@ export class LoginPage {
           cleanUsername,
           cleanPassword
         );
-
-        // ⭐ CACHE PROFILE FOR OFFLINE DASHBOARD
-        this.http.get<any>(`${environment.apiUrl}/auth/me`, {
-          headers: { Authorization: `Bearer ${res.token}` }
-        }).subscribe({
-          next: (profileRes) => {
-            localStorage.setItem('offline_profile', JSON.stringify(profileRes.profile));
-          },
-          error: () => {}
-        });
   
         // ✅ FIX: allow ALL non-admin users
         if (res.role !== 'admin') {
