@@ -103,12 +103,26 @@ export class AdminDashboardPage {
       }
     }).subscribe({
       next: (data) => {
-        this.studentCount = data.students || 0;
-        this.employeeCount = data.employees || 0;
-        this.scanCount = data.scans || 0;
-        
-        // 🟢 Cache for offline use
-        localStorage.setItem('offline_admin_stats', JSON.stringify(data));
+
+        const newData = JSON.stringify(data);
+        const oldData = localStorage.getItem('offline_admin_stats');
+      
+        // 🧠 ONLY UPDATE IF CHANGED
+        if (newData !== oldData) {
+      
+          console.log("🔄 Stats updated from server");
+      
+          this.studentCount = data.students || 0;
+          this.employeeCount = data.employees || 0;
+          this.scanCount = data.scans || 0;
+      
+          localStorage.setItem('offline_admin_stats', newData);
+          window.dispatchEvent(new Event('dataUpdated'));
+      
+        } else {
+          console.log("✅ Stats already up-to-date (no sync needed)");
+        }
+      
         this.auth.updateLastCheckin();
       },
       error: (err) => {
