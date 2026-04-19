@@ -35,11 +35,6 @@
   <!-- ✅ ID ALWAYS SHOW IF PROFILE EXISTS -->
   <div class="id-wrapper" *ngIf="profile">
 
-    <!-- Optional Offline Badge -->
-    <p *ngIf="isOffline" style="text-align:center; color:#f59e0b; margin-bottom:10px;">
-      Viewing Offline ID
-    </p>
-
     <div class="id-card card-ripple" id="id-card-to-export">
 
       <!-- Decorative Background -->
@@ -49,6 +44,9 @@
 
       <!-- HEADER -->
       <div class="card-header">
+        <span *ngIf="isOffline" class="offline-badge">
+          OFFLINE
+        </span>
         <div class="avatar-frame">
           <div class="avatar-main">
             <img *ngIf="profile.photo"
