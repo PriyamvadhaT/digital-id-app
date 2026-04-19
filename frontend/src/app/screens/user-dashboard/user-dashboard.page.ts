@@ -82,6 +82,12 @@ export class UserDashboardPage {
   }
 
   loadProfile() {
+
+     if (!navigator.onLine) {
+       console.log("🚫 Offline → skipping profile fetch");
+       return;
+     }
+    
     const token = localStorage.getItem('token');
 
     // ❌ DON'T REDIRECT if token missing immediately
