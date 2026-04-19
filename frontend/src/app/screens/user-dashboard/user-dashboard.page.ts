@@ -118,13 +118,24 @@ export class UserDashboardPage {
       headers: { Authorization: `Bearer ${token}` }
     }).subscribe({
       next: (res) => {
-        this.role = res.role;
-        this.profile = res.profile;
 
-        // ✅ CACHE FOR OFFLINE USE
-        localStorage.setItem('offline_profile', JSON.stringify(res.profile));
-
-        // ✅ UPDATE SESSION TIME
+        const newProfile = JSON.stringify(res.profile);
+        const oldProfile = localStorage.getItem('offline_profile');
+      
+        // 🧠 ONLY UPDATE IF CHANGED
+        if (newProfile !== oldProfile) {
+      
+          console.log("🔄 Profile updated from server");
+      
+          this.role = res.role;
+          this.profile = res.profile;
+      
+          localStorage.setItem('offline_profile', newProfile);
+      
+        } else {
+          console.log("✅ Profile already up-to-date (no sync needed)");
+        }
+      
         this.auth.updateLastCheckin();
       },
       error: (err) => {
