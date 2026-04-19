@@ -88,7 +88,7 @@ export class UserDashboardPage {
 
     // ✅ FALLBACK PROFILE (prevents blank screen)
     if (!this.profile) {
-      this.profile = { name: 'User' };
+      this.profile = null; // ⭐ don't show fake data
     }
 
     // ✅ LOAD FROM SERVER IN BACKGROUND (non-blocking)
