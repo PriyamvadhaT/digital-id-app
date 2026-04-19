@@ -54,6 +54,11 @@ export class IdCardPage {
   errorMessage = '';
   isOffline = !navigator.onLine;
 
+  dataUpdateHandler = () => {
+    console.log("🔄 Data updated → refreshing ID card");
+    this.loadId();
+  };
+
   constructor(
     private http: HttpClient,
     private router: Router,
@@ -69,6 +74,10 @@ export class IdCardPage {
 
   ionViewWillEnter() {
     this.isOffline = !navigator.onLine;
+  
+    // ⭐ ADD THIS
+    window.addEventListener('dataUpdated', this.dataUpdateHandler);
+  
     this.loadId();
   }
 
@@ -200,6 +209,10 @@ export class IdCardPage {
     if (!this.qrValue) {
       this.qrValue = localStorage.getItem('offlineIdToken') || '';
     }
+  }
+
+  ionViewWillLeave() {
+    window.removeEventListener('dataUpdated', this.dataUpdateHandler);
   }
 
 }
