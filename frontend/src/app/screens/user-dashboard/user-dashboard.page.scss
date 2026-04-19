@@ -59,7 +59,7 @@
     margin-top: 8px;
   }
 
-  .role-badge, .offline-badge {
+  .role-badge {
     display: inline-flex;
     align-items: center;
     gap: 4px;
@@ -74,11 +74,25 @@
     border: 1px solid rgba(255, 255, 255, 0.2);
   }
 
+  /* ✅ OFFLINE BADGE (solid, visible) */
   .offline-badge {
-    background: rgba(239, 68, 68, 0.2);
-    color: #fecaca;
-    border-color: rgba(239, 68, 68, 0.3);
-    ion-icon { font-size: 14px; }
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  
+    padding: 6px 14px;
+    border-radius: 100px;
+  
+    background: #ef4444; /* solid red */
+    color: #ffffff;
+  
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  
+    border: none;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
   }
 }
 
