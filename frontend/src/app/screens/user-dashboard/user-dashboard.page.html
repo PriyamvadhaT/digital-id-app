@@ -6,12 +6,6 @@
 
     <!-- Profile Header -->
     <div class="profile-section" *ngIf="profile; else loadingProfile">
-      <ng-template #loadingProfile>
-        <div style="text-align:center; padding:40px;">
-          <ion-spinner></ion-spinner>
-          <p>Loading profile...</p>
-        </div>
-      </ng-template>
       <div class="avatar-wrapper">
         <div class="avatar-main">
           <img *ngIf="profile.photo" [src]="'data:image/jpeg;base64,' + profile.photo" alt="Profile" class="profile-img">
@@ -19,6 +13,13 @@
         </div>
         <div class="status-ring"></div>
       </div>
+
+      <ng-template #loadingProfile>
+        <div style="text-align:center; padding:40px;">
+          <ion-spinner></ion-spinner>
+          <p>Loading profile...</p>
+        </div>
+      </ng-template>
 
       <div class="user-info">
         <h2>{{ profile.name }}</h2>
