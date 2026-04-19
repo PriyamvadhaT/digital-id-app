@@ -76,9 +76,11 @@ export class UserDashboardPage {
     }
 
     // ✅ LOAD FROM SERVER IN BACKGROUND (non-blocking)
-    setTimeout(() => {
-      this.loadProfile();
-    }, 1000);
+    if (navigator.onLine) {
+      setTimeout(() => {
+        this.loadProfile();
+      }, 1000);
+    }
   }
 
   loadProfile() {
