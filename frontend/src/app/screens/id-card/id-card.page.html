@@ -33,7 +33,7 @@
   </div>
 
   <!-- ✅ ID ALWAYS SHOW IF PROFILE EXISTS -->
-  <div class="id-wrapper" *ngIf="profile">
+  <div class="id-wrapper" *ngIf="profile && profile.name">
 
     <div class="id-card card-ripple" id="id-card-to-export">
 
