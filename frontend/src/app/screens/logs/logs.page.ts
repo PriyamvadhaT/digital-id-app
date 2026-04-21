@@ -117,6 +117,40 @@ export class LogsPage {
     });
   }
 
+  deleteLogs() {
+
+    if (!confirm('Delete filtered logs?')) return;
+  
+    const token = localStorage.getItem('token');
+  
+    let url = `${environment.apiUrl}/id/logs?`;
+  
+    if (this.fromDate && this.toDate) {
+      url += `from=${this.fromDate}&to=${this.toDate}&`;
+    }
+  
+    if (this.resultFilter) {
+      url += `result=${this.resultFilter}&`;
+    }
+  
+    if (this.verifierRoleFilter) {
+      url += `verifierRole=${this.verifierRoleFilter}`;
+    }
+  
+    this.http.delete<any>(url, {
+      headers: { Authorization: `Bearer ${token}` }
+    }).subscribe({
+      next: (res) => {
+        alert(`Deleted ${res.count} logs`);
+        this.loadLogs();
+      },
+      error: () => {
+        alert('Failed to delete logs');
+      }
+    });
+  
+  }
+
   handleRefresh(event: any) {
     this.loadLogs();
     setTimeout(() => {
