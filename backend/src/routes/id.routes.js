@@ -27,6 +27,7 @@ router.post('/verify-qr', auth, controller.verifyQr);
 router.get('/my-id', auth, controller.getMyId);
 
 router.get('/logs', auth, controller.getLogs);
+router.delete('/logs', auth, controller.deleteLogs);
 
 router.get('/get-stats', auth, controller.getStats);
 module.exports = router;
