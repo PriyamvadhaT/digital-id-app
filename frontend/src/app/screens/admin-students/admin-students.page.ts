@@ -180,6 +180,8 @@ export class AdminStudentsPage {
 
       student.isActive = !student.isActive;
 
+      this.loadStudents();
+
     });
 
   }
