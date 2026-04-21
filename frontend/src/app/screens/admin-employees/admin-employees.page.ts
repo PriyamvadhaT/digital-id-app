@@ -173,6 +173,8 @@ export class AdminEmployeesPage {
 
       employee.isActive = !employee.isActive;
 
+      this.loadEmployees();
+
     });
 
   }
