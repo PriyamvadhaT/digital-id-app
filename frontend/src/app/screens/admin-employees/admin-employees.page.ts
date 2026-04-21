@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
+import { briefcaseOutline } from 'ionicons/icons';
 import {
   IonContent,
   IonHeader,
@@ -83,7 +84,8 @@ export class AdminEmployeesPage {
       trashOutline,
       filterOutline,
       chevronBackOutline,
-      closeOutline
+      closeOutline,
+      briefcaseOutline
     });
 
   }
