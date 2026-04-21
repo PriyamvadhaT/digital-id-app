@@ -359,15 +359,14 @@ exports.verifyQr = async (req, res) => {
     }
 
     let userId = null;
-    let decoded = null;
 
     if (token.startsWith('V1:')) {
       userId = token.split(':')[1];
     } else {
       try {
-        decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
         userId = decoded.userId;
-      } catch (jwtErr) {
+      } catch {
         return res.status(400).json({ valid: false, message: 'Expired or invalid QR token' });
       }
     }
@@ -376,38 +375,47 @@ exports.verifyQr = async (req, res) => {
       return res.status(400).json({ valid: false, message: 'Malformed QR data' });
     }
 
-    // 🛡️ SAFELY LOOKUP USER
     let user;
     try {
       user = await User.findById(userId);
-    } catch (castErr) {
+    } catch {
       return res.status(400).json({ valid: false, message: 'Invalid ID format in QR' });
     }
 
     if (!user) {
-      // Log failure safely in background
-      VerificationLog.create({ scannedBy: scanner?._id, result: 'INVALID' }).catch(() => {});
+      // ✅ FIXED INVALID LOG
+      VerificationLog.create({
+        scannedBy: scanner?._id,
+        scannedName: 'Unknown User',
+        scannedId: 'N/A',
+        scannedRole: 'Unknown',
+        result: 'INVALID'
+      }).catch(() => {});
+
       return res.status(404).json({ valid: false, message: 'Identity not found' });
     }
 
-    // Safely look up profile
+    // ✅ GET PROFILE
     let profile = null;
-    try {
-      if (user.role === 'Student') {
-        profile = await Student.findById(user.profileId);
-      } else if (user.role === 'Employee') {
-        profile = await Employee.findById(user.profileId);
-      }
-    } catch (profileErr) {
-      console.error('Profile lookup error:', profileErr);
+    if (user.role === 'Student') {
+      profile = await Student.findById(user.profileId);
+    } else if (user.role === 'Employee') {
+      profile = await Employee.findById(user.profileId);
     }
+
+    const name = profile?.name || 'User';
+    const id = profile?.id || 'N/A';
+    const role = user.role;
 
     // 🛡️ ROLE RESTRICTION
     if (scanner.role === 'Employee' && user.role !== 'Student') {
+
       VerificationLog.create({
         scannedBy: scanner._id,
         scannedUser: user._id,
-        scannedName: profile?.name,
+        scannedName: name,
+        scannedId: id,          // ✅ FIX
+        scannedRole: role,      // ✅ FIX
         result: 'NOT ALLOWED'
       }).catch(() => {});
 
@@ -419,10 +427,13 @@ exports.verifyQr = async (req, res) => {
 
     // 🛡️ ACCOUNT STATUS
     if (user.isActive === false) {
+
       VerificationLog.create({
         scannedBy: scanner._id,
         scannedUser: user._id,
-        scannedName: profile?.name,
+        scannedName: name,
+        scannedId: id,          // ✅ FIX
+        scannedRole: role,      // ✅ FIX
         result: 'INACTIVE'
       }).catch(() => {});
 
@@ -430,9 +441,9 @@ exports.verifyQr = async (req, res) => {
         valid: false,
         isActive: false,
         message: 'ID DEACTIVATED',
-        name: profile?.name || 'User',
-        id: profile?.id || 'N/A',
-        role: user.role
+        name,
+        id,
+        role
       });
     }
 
@@ -440,30 +451,31 @@ exports.verifyQr = async (req, res) => {
     VerificationLog.create({
       scannedBy: scanner._id,
       scannedUser: user._id,
-      scannedName: profile?.name,
+      scannedName: name,
+      scannedId: id,            // ✅ FIX
+      scannedRole: role,        // ✅ FIX
       result: 'VALID'
     }).catch(() => {});
 
     return res.json({
       valid: true,
       isActive: true,
-      name: profile?.name || 'User',
-      id: profile?.id || 'N/A',
+      name,
+      id,
       department: profile?.department || '',
-      role: user.role,
+      role,
       photo: profile?.photo || ''
     });
 
   } catch (err) {
     console.error('🚀 VERIFY_QR CRASH:', err);
-    return res.status(500).json({ 
-      valid: false, 
+    return res.status(500).json({
+      valid: false,
       message: 'Server verification error',
-      error: err.message 
+      error: err.message
     });
   }
 };
-
 /* ===================== GET SCOPED LOGS (ADMIN/EMPLOYEE) ===================== */
 exports.getLogs = async (req, res) => {
   try {
