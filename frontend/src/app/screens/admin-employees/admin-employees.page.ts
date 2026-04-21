@@ -166,17 +166,32 @@ export class AdminEmployeesPage {
 
   toggleStatus(employee: any) {
 
+    // 🚫 prevent multiple clicks
+    if (employee.loading) return;
+  
+    employee.loading = true;
+  
+    const newStatus = !employee.isActive;
+  
+    // ⚡ instant UI update
+    employee.isActive = newStatus;
+  
     this.http.patch(
       `${this.baseUrl}/employee/${employee._id}/status`,
-      { isActive: !employee.isActive }, this.getHeaders()
-    ).subscribe(() => {
-
-      employee.isActive = !employee.isActive;
-
-      this.loadEmployees();
-
+      { isActive: newStatus },
+      this.getHeaders()
+    ).subscribe({
+      next: () => {
+        employee.loading = false;
+      },
+      error: () => {
+        // ❌ revert if failed
+        employee.isActive = !newStatus;
+        employee.loading = false;
+        alert('Failed to update status');
+      }
     });
-
+  
   }
 
   deleteEmployee(id: string) {
