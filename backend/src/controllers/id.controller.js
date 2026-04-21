@@ -218,10 +218,14 @@ exports.deleteStudent = async (req, res) => {
   try {
     const { id } = req.params;
 
-    await Student.findByIdAndUpdate(id, { isActive: false });
-    await User.findOneAndUpdate({ profileId: id, role: 'Student' }, { isActive: false });
+    // 🧠 Delete student profile
+    await Student.findByIdAndDelete(id);
 
-    res.json({ message: 'Student soft deleted' });
+    // 🔥 Delete linked user account
+    await User.findOneAndDelete({ profileId: id, role: 'Student' });
+
+    res.json({ message: 'Student deleted permanently' });
+
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -232,10 +236,11 @@ exports.deleteEmployee = async (req, res) => {
   try {
     const { id } = req.params;
 
-    await Employee.findByIdAndUpdate(id, { isActive: false });
-    await User.findOneAndUpdate({ profileId: id, role: 'Employee' }, { isActive: false });
+    await Employee.findByIdAndDelete(id);
+    await User.findOneAndDelete({ profileId: id, role: 'Employee' });
 
-    res.json({ message: 'Employee soft deleted' });
+    res.json({ message: 'Employee deleted permanently' });
+
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
