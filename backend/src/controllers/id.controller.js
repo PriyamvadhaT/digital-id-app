@@ -509,6 +509,18 @@ exports.getLogs = async (req, res) => {
         $gte: new Date(from),
         $lte: new Date(to)
       };
+    } else {
+      // 🔥 DEFAULT → TODAY ONLY
+      const start = new Date();
+      start.setHours(0, 0, 0, 0);
+    
+      const end = new Date();
+      end.setHours(23, 59, 59, 999);
+    
+      filter.date = {
+        $gte: start,
+        $lte: end
+      };
     }
 
     // 🔎 Result Filter
