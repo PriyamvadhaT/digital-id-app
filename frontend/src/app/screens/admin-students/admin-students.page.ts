@@ -173,17 +173,32 @@ export class AdminStudentsPage {
 
   toggleStatus(student: any) {
 
+    // 🚫 stop multiple clicks
+    if (student.loading) return;
+  
+    student.loading = true;
+  
+    const newStatus = !student.isActive;
+  
+    // ⚡ instant UI update
+    student.isActive = newStatus;
+  
     this.http.patch(
       `${this.baseUrl}/student/${student._id}/status`,
-      { isActive: !student.isActive }, this.getHeaders()
-    ).subscribe(() => {
-
-      student.isActive = !student.isActive;
-
-      this.loadStudents();
-
+      { isActive: newStatus },
+      this.getHeaders()
+    ).subscribe({
+      next: () => {
+        student.loading = false;
+      },
+      error: () => {
+        // ❌ revert if failed
+        student.isActive = !newStatus;
+        student.loading = false;
+        alert('Failed to update status');
+      }
     });
-
+  
   }
 
   deleteStudent(id: string) {
