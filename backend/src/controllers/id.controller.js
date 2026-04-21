@@ -561,6 +561,70 @@ exports.getLogs = async (req, res) => {
   }
 };
 
+/* ===================== DELETE LOGS (ADMIN) ===================== */
+
+exports.deleteLogs = async (req, res) => {
+  try {
+    const { from, to, result, verifierRole } = req.query;
+    const currentUser = req.user;
+
+    let filter = {};
+
+    // 🔐 SAME ROLE LOGIC AS getLogs
+    if (currentUser.role === 'Admin') {
+      const managedUsers = await User.find({ adminId: currentUser._id }).select('_id');
+      const managedIds = managedUsers.map(u => u._id);
+      managedIds.push(currentUser._id);
+
+      filter = {
+        $or: [
+          { scannedBy: { $in: managedIds } },
+          { scannedUser: { $in: managedIds } }
+        ]
+      };
+    } else {
+      filter = { scannedBy: currentUser._id };
+    }
+
+    // 📅 DATE FILTER
+    if (from && to) {
+      filter.date = {
+        $gte: new Date(from),
+        $lte: new Date(to)
+      };
+    } else {
+      // default → today
+      const start = new Date();
+      start.setHours(0, 0, 0, 0);
+
+      const end = new Date();
+      end.setHours(23, 59, 59, 999);
+
+      filter.date = { $gte: start, $lte: end };
+    }
+
+    // 🔎 RESULT FILTER
+    if (result) {
+      filter.result = result;
+    }
+
+    // 🔦 VERIFIER ROLE FILTER
+    if (verifierRole) {
+      filter.scannedBy = { $in: await getManagedVerifierIds(currentUser, verifierRole) };
+    }
+
+    const deleted = await VerificationLog.deleteMany(filter);
+
+    res.json({
+      message: 'Logs deleted',
+      count: deleted.deletedCount
+    });
+
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
 /* ===================== GET DASHBOARD STATS (ADMIN) ===================== */
 exports.getStats = async (req, res) => {
   try {
