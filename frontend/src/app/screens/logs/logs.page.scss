@@ -228,3 +228,17 @@
   .date-group { justify-content: center; }
   .entry-meta { flex-direction: column; align-items: flex-start; gap: 6px; }
 }
+
+.delete-btn {
+  background: #ff4d4f;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  margin-left: 10px;
+  cursor: pointer;
+}
+
+.delete-btn:hover {
+  background: #d9363e;
+}
