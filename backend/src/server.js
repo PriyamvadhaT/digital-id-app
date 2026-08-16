@@ -10,7 +10,10 @@ const app = express();
 app.use(express.json());
 
 app.use(cors({
-  origin: 'https://digital-id-app-one.vercel.app',
+  origin: [
+	'https://digital-id-app-one.vercel.app',
+	'http://localhost:4200'
+  ],
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
   credentials: true
 }));
